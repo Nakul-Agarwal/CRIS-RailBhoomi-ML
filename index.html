@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rail Bhoomi – Project Milestone Prediction</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; font-size: 13px; background: #eef1f4; color: #222; min-height: 100vh; }
+
+/* HEADER */
+.site-header { background: #1a3a5c; border-bottom: 3px solid #e8a020; }
+.header-inner { display: flex; align-items: center; gap: 14px; padding: 10px 20px; }
+.logo-circle { width: 48px; height: 48px; background: #fff; border-radius: 50%; border: 2px solid #e8a020; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.logo-circle svg { width: 38px; height: 38px; }
+.header-text { color: #fff; }
+.header-text h1 { font-size: 17px; font-weight: bold; }
+.header-text p  { font-size: 11px; color: #b0c4d8; margin-top: 2px; }
+
+/* BREADCRUMB */
+.breadcrumb { background: #dce4ed; padding: 6px 20px; font-size: 11px; color: #555; border-bottom: 1px solid #c5cfd8; }
+.breadcrumb a { color: #1a5276; text-decoration: none; }
+.breadcrumb span { color: #333; font-weight: bold; }
+
+/* MAIN */
+.main-wrap { max-width: 1060px; margin: 18px auto; padding: 0 16px 40px; }
+.page-heading { font-size: 16px; font-weight: bold; color: #1a3a5c; padding-bottom: 6px; border-bottom: 2px solid #1a3a5c; margin-bottom: 16px; }
+
+/* TABS */
+.tab-nav { display: flex; border-bottom: 2px solid #1a3a5c; margin-bottom: 18px; }
+.tab-nav button { padding: 8px 22px; border: 1px solid #b0bec5; border-bottom: none; background: #d8e2ea; color: #444; font-size: 12px; font-weight: bold; cursor: pointer; border-radius: 3px 3px 0 0; margin-right: 3px; transition: background 0.15s; }
+.tab-nav button.active { background: #1a3a5c; color: #fff; border-color: #1a3a5c; }
+.tab-nav button:hover:not(.active) { background: #c2d0db; }
+
+/* PANEL */
+.panel { background: #fff; border: 1px solid #c8d4dc; border-radius: 2px; margin-bottom: 14px; }
+.panel-head { background: #f0f4f7; border-bottom: 1px solid #c8d4dc; padding: 8px 14px; font-size: 12px; font-weight: bold; color: #1a3a5c; }
+.panel-body { padding: 16px 14px 10px; }
+
+/* INFO BAR */
+.info-bar { background: #f0f6fb; border-left: 3px solid #1a5276; padding: 8px 12px; font-size: 12px; color: #444; margin-bottom: 14px; line-height: 1.6; }
+
+/* FORM ROW */
+.form-row { display: flex; gap: 20px; margin-bottom: 14px; flex-wrap: wrap; }
+.form-cell { flex: 1; min-width: 160px; }
+.form-cell label { display: block; font-size: 11px; font-weight: bold; color: #444; margin-bottom: 4px; }
+.form-cell input[type="text"],
+.form-cell input[type="number"],
+.form-cell select {
+  width: 100%; background: #fffff0; border: 1px solid #aab5be;
+  border-radius: 2px; padding: 6px 8px; font-size: 12px; color: #111;
+  transition: border-color 0.15s;
+}
+.form-cell input:focus, .form-cell select:focus { outline: none; border-color: #1a5276; }
+
+/* DATE FIELD — 3 dropdowns inline */
+.date-group { display: flex; gap: 4px; }
+.date-group select {
+  background: #fffff0; border: 1px solid #aab5be; border-radius: 2px;
+  padding: 6px 4px; font-size: 12px; color: #111;
+}
+.date-group select:focus { outline: none; border-color: #1a5276; }
+.date-dd  { width: 56px; }
+.date-mm  { width: 110px; }
+.date-yy  { width: 72px; }
+
+/* BUTTONS */
+.btn-bar { padding: 10px 14px; background: #f5f7f9; border-top: 1px solid #dde4ea; display: flex; gap: 8px; }
+.btn-search { background: #1a5276; color: #fff; border: none; padding: 7px 22px; border-radius: 2px; font-size: 12px; font-weight: bold; cursor: pointer; }
+.btn-search:hover { background: #154060; }
+.btn-reset  { background: #6c757d; color: #fff; border: none; padding: 7px 16px; border-radius: 2px; font-size: 12px; cursor: pointer; }
+.btn-reset:hover { background: #545b62; }
+
+/* ALERT */
+.alert-box { display: none; padding: 8px 12px; border-radius: 2px; margin-bottom: 10px; font-size: 12px; }
+.alert-box.show { display: block; }
+.alert-err { background: #fdecea; border: 1px solid #f5b7b1; color: #a93226; }
+
+/* SPINNER */
+.spinner-row { display: none; text-align: center; padding: 20px; color: #555; font-size: 12px; }
+.spinner-row.show { display: block; }
+.spin-ring { display: inline-block; width: 22px; height: 22px; border: 3px solid #ddd; border-top-color: #1a5276; border-radius: 50%; animation: spin 0.75s linear infinite; vertical-align: middle; margin-right: 8px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* RESULT */
+.result-section { display: none; }
+.result-section.show { display: block; }
+
+/* SUMMARY ROW */
+.summary-row { display: flex; gap: 1px; margin-bottom: 14px; border: 1px solid #c8d4dc; border-radius: 2px; overflow: hidden; }
+.sum-box { flex: 1; background: #fff; padding: 10px 14px; border-right: 1px solid #e0e6ea; text-align: center; }
+.sum-box:last-child { border-right: none; }
+.sum-box .s-lbl { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.sum-box .s-val { font-size: 20px; font-weight: bold; }
+.c1{color:#1a3a5c;} .c2{color:#1e8449;} .c3{color:#b7770d;} .c4{color:#922b21;}
+
+/* TIMELINE */
+.tl-wrap { padding: 4px 0 4px 10px; }
+.tl-item { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; position: relative; }
+.tl-item:not(:last-child)::before { content:''; position:absolute; left:9px; top:22px; width:2px; height:calc(100% + 10px); background:#c8d4dc; }
+.tl-dot { width:20px; height:20px; border-radius:50%; font-size:9px; font-weight:bold; color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0; position:relative; z-index:1; }
+.dot-cur{background:#1e8449;} .dot-next{background:#1a5276;} .dot-end{background:#b7770d;}
+.tl-box { border:1px solid #dde4ea; border-radius:2px; padding:8px 12px; background:#fff; flex:1; }
+.tl-box.cur-box { background:#f0faf4; border-color:#a9dfbf; }
+.tl-stage-name { font-size:11px; font-weight:bold; color:#555; margin-bottom:2px; }
+.tl-date { font-size:15px; font-weight:bold; color:#1a3a5c; margin-bottom:2px; }
+.tl-meta { font-size:10px; color:#888; }
+
+/* STAGE PILL */
+.pill { display:inline-block; padding:1px 7px; border-radius:2px; font-size:10px; font-weight:bold; margin-right:5px; }
+.p37A{background:#d5f0d5;color:#1a5e1a;} .p7A{background:#d0e8fc;color:#0a3060;}
+.p20A{background:#e8d5f4;color:#5a0075;} .p20E{background:#fff3cc;color:#7a5000;}
+.p20F{background:#ffe5b4;color:#7a3000;} .p20H{background:#fdd;color:#7a0000;}
+.pMut{background:#1a3a5c;color:#fff;}
+
+/* SNAPSHOT TABLE */
+.snap-wrap { overflow-x:auto; }
+.snap-tbl { width:100%; border-collapse:collapse; font-size:12px; }
+.snap-tbl th { background:#1a3a5c; color:#fff; padding:8px 10px; text-align:left; font-size:11px; font-weight:bold; white-space:nowrap; }
+.snap-tbl td { padding:8px 10px; border-bottom:1px solid #e8edf0; vertical-align:middle; }
+.snap-tbl tr:nth-child(even) td { background:#f7f9fb; }
+.snap-tbl tr:hover td { background:#eaf2f8; }
+.bar-wrap { width:120px; background:#e0e6ea; border-radius:2px; height:12px; overflow:hidden; }
+.bar-fill { height:100%; border-radius:2px; transition:width 0.6s ease; }
+.bh{background:#1e8449;} .bm{background:#b7770d;} .bl{background:#922b21;}
+.count-big { font-size:14px; font-weight:bold; color:#1a3a5c; }
+
+/* FOOTER */
+.site-footer { background:#fff; border-top:1px solid #c8d4dc; padding:9px 20px; text-align:right; font-size:10px; color:#999; margin-top:20px; }
+
+@media(max-width:700px){ .form-row{flex-direction:column;} .summary-row{flex-wrap:wrap;} .sum-box{min-width:45%; border-bottom:1px solid #e0e6ea;} }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo-circle">
+      <svg viewBox="0 0 38 38">
+        <circle cx="19" cy="19" r="17" fill="#1a3a5c" stroke="#e8a020" stroke-width="2"/>
+        <text x="19" y="13" text-anchor="middle" fill="#fff" font-size="4.5" font-weight="bold">INDIAN</text>
+        <text x="19" y="19" text-anchor="middle" fill="#fff" font-size="4.5" font-weight="bold">RAILWAYS</text>
+        <rect x="7" y="22" width="24" height="3.5" rx="1" fill="#e8a020"/>
+        <circle cx="11" cy="29" r="2" fill="#fff"/>
+        <circle cx="19" cy="29" r="2" fill="#fff"/>
+        <circle cx="27" cy="29" r="2" fill="#fff"/>
+      </svg>
+    </div>
+    <div class="header-text">
+      <h1>Railway Land Acquisition &ndash; AI Prediction System</h1>
+      <p>Rail Bhoomi Portal &nbsp;&bull;&nbsp; Ministry of Railways, Government of India &nbsp;&bull;&nbsp; CRIS</p>
+    </div>
+  </div>
+</header>
+
+<div class="breadcrumb">
+  <a href="#">MIS Reports</a> &rsaquo; <span>Project Milestone Prediction &amp; Forecasting</span>
+</div>
+
+<div class="main-wrap">
+  <div class="page-heading">Project Milestone Prediction &amp; Forecasting</div>
+
+  <div class="tab-nav">
+    <button class="active" onclick="switchTab('t1',this)">Stage-wise Date Prediction</button>
+    <button onclick="switchTab('t2',this)">Pipeline Completion Forecast</button>
+  </div>
+
+  <!-- TAB 1 -->
+  <div id="tab-t1">
+    <div class="info-bar">
+      Select the current notification stage of the project and fill in the project parameters.
+      The model will predict the expected date for each future stage up to final Mutation.
+    </div>
+    <div class="panel">
+      <div class="panel-head">Project &amp; Stage Information</div>
+      <div class="panel-body">
+
+        <div class="form-row">
+          <div class="form-cell">
+            <label>Railway Zone *</label>
+            <select id="t1-zone" onchange="loadDiv()">
+              <option value="">-- Select Railway Zone --</option>
+              <option value="NR">Northern Railway (NR)</option>
+              <option value="NER">North Eastern Railway (NER)</option>
+              <option value="NFR">Northeast Frontier Railway (NFR)</option>
+              <option value="ER">Eastern Railway (ER)</option>
+              <option value="SER">South Eastern Railway (SER)</option>
+              <option value="SCR">South Central Railway (SCR)</option>
+              <option value="SR">Southern Railway (SR)</option>
+              <option value="CR">Central Railway (CR)</option>
+              <option value="WR">Western Railway (WR)</option>
+              <option value="SWR">South Western Railway (SWR)</option>
+              <option value="NWR">North Western Railway (NWR)</option>
+              <option value="WCR">West Central Railway (WCR)</option>
+              <option value="NCR">North Central Railway (NCR)</option>
+              <option value="SECR">South East Central Railway (SECR)</option>
+              <option value="ECoR">East Coast Railway (ECoR)</option>
+              <option value="ECR">East Central Railway (ECR)</option>
+              <option value="KR">Konkan Railway (KR)</option>
+            </select>
+          </div>
+          <div class="form-cell">
+            <label>Division *</label>
+            <select id="t1-div">
+              <option value="">-- Select Zone First --</option>
+            </select>
+          </div>
+          <div class="form-cell">
+            <label>Current Notification Stage *</label>
+            <select id="t1-stage">
+              <option value="37A">Sec 37A &ndash; Special Railway Project</option>
+              <option value="7A">Sec 7A &ndash; CALA Nomination</option>
+              <option value="20A">Sec 20A &ndash; Land Identification</option>
+              <option value="20E">Sec 20E &ndash; Land Party Identification</option>
+              <option value="20F">Sec 20F &ndash; Compensation</option>
+              <option value="20H">Sec 20H &ndash; Possession</option>
+            </select>
+          </div>
+          <div class="form-cell">
+            <label>Date of Current Stage (DD/MM/YYYY) *</label>
+            <div class="date-group">
+              <select id="t1-dd" class="date-dd"><option value="">DD</option></select>
+              <select id="t1-mm" class="date-mm">
+                <option value="">Month</option>
+                <option value="01">January</option><option value="02">February</option>
+                <option value="03">March</option><option value="04">April</option>
+                <option value="05">May</option><option value="06">June</option>
+                <option value="07">July</option><option value="08">August</option>
+                <option value="09">September</option><option value="10">October</option>
+                <option value="11">November</option><option value="12">December</option>
+              </select>
+              <select id="t1-yy" class="date-yy"><option value="">YYYY</option></select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-cell">
+            <label>State *</label>
+            <select id="t1-states" onchange="loadDistricts()">
+              <option value="">-- Select Zone First --</option>
+            </select>
+          </div>
+          <div class="form-cell">
+            <label>District *</label>
+            <select id="t1-dists">
+              <option value="">-- Select State First --</option>
+            </select>
+          </div>
+          <div class="form-cell">
+            <label>Government Land (Ha)</label>
+            <input type="number" id="t1-govt" placeholder="e.g. 30.00" min="0" step="0.01"/>
+          </div>
+          <div class="form-cell">
+            <label>Private Land (Ha)</label>
+            <input type="number" id="t1-priv" placeholder="e.g. 65.00" min="0" step="0.01"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-cell">
+            <label>Forest Area (Ha)</label>
+            <input type="number" id="t1-forest" placeholder="e.g. 5.00" min="0" step="0.01"/>
+          </div>
+          <div class="form-cell">
+            <label>No. of Court Cases</label>
+            <input type="number" id="t1-cc" value="0" min="0"/>
+          </div>
+          <div class="form-cell"></div>
+          <div class="form-cell"></div>
+        </div>
+
+      </div>
+      <div class="btn-bar">
+        <button class="btn-search" onclick="predictStages()">Search</button>
+        <button class="btn-reset"  onclick="clearT1()">Clear</button>
+      </div>
+    </div>
+
+    <div class="spinner-row" id="sp1"><span class="spin-ring"></span>Processing request…</div>
+    <div class="alert-box"  id="al1"></div>
+
+    <div class="result-section" id="res1">
+      <div class="summary-row" id="sum1"></div>
+      <div class="panel">
+        <div class="panel-head">Predicted Notification Stage Dates</div>
+        <div class="panel-body">
+          <div class="tl-wrap" id="tl1"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2 -->
+  <div id="tab-t2" style="display:none">
+    <div class="info-bar">
+      Select a target date. The system will automatically read all active projects from the
+      database and forecast how many are expected to reach each notification stage by that date.
+    </div>
+    <div class="panel">
+      <div class="panel-head">Forecast Parameters</div>
+      <div class="panel-body">
+        <div class="form-row">
+          <div class="form-cell" style="max-width:320px;">
+            <label>Target Forecast Date (DD/MM/YYYY) *</label>
+            <div class="date-group">
+              <select id="t2-dd" class="date-dd"><option value="">DD</option></select>
+              <select id="t2-mm" class="date-mm">
+                <option value="">Month</option>
+                <option value="01">January</option><option value="02">February</option>
+                <option value="03">March</option><option value="04">April</option>
+                <option value="05">May</option><option value="06">June</option>
+                <option value="07">July</option><option value="08">August</option>
+                <option value="09">September</option><option value="10">October</option>
+                <option value="11">November</option><option value="12">December</option>
+              </select>
+              <select id="t2-yy" class="date-yy"><option value="">YYYY</option></select>
+            </div>
+          </div>
+          <div class="form-cell"></div>
+          <div class="form-cell"></div>
+          <div class="form-cell"></div>
+        </div>
+      </div>
+      <div class="btn-bar">
+        <button class="btn-search" onclick="pipelineSnap()">Search</button>
+        <button class="btn-reset"  onclick="clearT2()">Clear</button>
+      </div>
+    </div>
+
+    <div class="spinner-row" id="sp2"><span class="spin-ring"></span>Forecasting pipeline status…</div>
+    <div class="alert-box"  id="al2"></div>
+
+    <div class="result-section" id="res2">
+      <div class="panel">
+        <div class="panel-head" id="res2-head">Pipeline Forecast Result</div>
+        <div class="panel-body snap-wrap">
+          <table class="snap-tbl">
+            <thead>
+              <tr>
+                <th>Sr.</th><th>Stage</th><th>Stage Description</th>
+                <th>Projects Reached</th><th>% of Active</th>
+                <th>Progress</th><th>Median Days from 37A</th>
+              </tr>
+            </thead>
+            <tbody id="snap-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="site-footer">
+  Owned by Ministry of Railways &nbsp;|&nbsp; Developed and maintained by CRIS &nbsp;|&nbsp;
+  AI Prediction Module &ndash; Rail Bhoomi, CEP1 Section
+</div>
+
+<script>
+const API = 'http://localhost:5000';
+
+// ── LGD Data ──────────────────────────────────────────────────────
+const STATES_DATA = [{"code": 1, "name": "Jammu And Kashmir"}, {"code": 2, "name": "Himachal Pradesh"}, {"code": 3, "name": "Punjab"}, {"code": 4, "name": "Chandigarh"}, {"code": 5, "name": "Uttarakhand"}, {"code": 6, "name": "Haryana"}, {"code": 7, "name": "Delhi"}, {"code": 8, "name": "Rajasthan"}, {"code": 9, "name": "Uttar Pradesh"}, {"code": 10, "name": "Bihar"}, {"code": 11, "name": "Sikkim"}, {"code": 12, "name": "Arunachal Pradesh"}, {"code": 13, "name": "Nagaland"}, {"code": 14, "name": "Manipur"}, {"code": 15, "name": "Mizoram"}, {"code": 16, "name": "Tripura"}, {"code": 17, "name": "Meghalaya"}, {"code": 18, "name": "Assam"}, {"code": 19, "name": "West Bengal"}, {"code": 20, "name": "Jharkhand"}, {"code": 21, "name": "Odisha"}, {"code": 22, "name": "Chhattisgarh"}, {"code": 23, "name": "Madhya Pradesh"}, {"code": 24, "name": "Gujarat"}, {"code": 27, "name": "Maharashtra"}, {"code": 28, "name": "Andhra Pradesh"}, {"code": 29, "name": "Karnataka"}, {"code": 30, "name": "Goa"}, {"code": 31, "name": "Lakshadweep"}, {"code": 32, "name": "Kerala"}, {"code": 33, "name": "Tamil Nadu"}, {"code": 34, "name": "Puducherry"}, {"code": 35, "name": "Andaman And Nicobar Islands"}, {"code": 36, "name": "Telangana"}, {"code": 37, "name": "Ladakh"}, {"code": 38, "name": "The Dadra And Nagar Haveli And Daman And Diu"}];
+const STATE_DISTRICTS = {"35": [{"code": 603, "name": "Nicobars"}, {"code": 632, "name": "North And Middle Andaman"}, {"code": 602, "name": "South Andamans"}], "28": [{"code": 745, "name": "Alluri Sitharama Raju"}, {"code": 744, "name": "Anakapalli"}, {"code": 502, "name": "Ananthapuramu"}, {"code": 753, "name": "Annamayya"}, {"code": 750, "name": "Bapatla"}, {"code": 503, "name": "Chittoor"}, {"code": 747, "name": "Dr. B.R. Ambedkar Konaseema"}, {"code": 505, "name": "East Godavari"}, {"code": 748, "name": "Eluru"}, {"code": 506, "name": "Guntur"}, {"code": 746, "name": "Kakinada"}, {"code": 510, "name": "Krishna"}, {"code": 511, "name": "Kurnool"}, {"code": 790, "name": "Markapuram"}, {"code": 755, "name": "Nandyal"}, {"code": 749, "name": "Ntr"}, {"code": 751, "name": "Palnadu"}, {"code": 743, "name": "Parvathipuram Manyam"}, {"code": 791, "name": "Polavaram"}, {"code": 517, "name": "Prakasam"}, {"code": 515, "name": "Sri Potti Sriramulu Nellore"}, {"code": 754, "name": "Sri Sathya Sai"}, {"code": 519, "name": "Srikakulam"}, {"code": 752, "name": "Tirupati"}, {"code": 520, "name": "Visakhapatnam"}, {"code": 521, "name": "Vizianagaram"}, {"code": 523, "name": "West Godavari"}, {"code": 504, "name": "Y.S.R. Kadapa"}], "12": [{"code": 628, "name": "Anjaw"}, {"code": 787, "name": "Bichom"}, {"code": 229, "name": "Changlang"}, {"code": 230, "name": "Dibang Valley"}, {"code": 231, "name": "East Kameng"}, {"code": 232, "name": "East Siang"}, {"code": 718, "name": "Kamle"}, {"code": 786, "name": "Keyi Panyor"}, {"code": 677, "name": "Kra Daadi"}, {"code": 233, "name": "Kurung Kumey"}, {"code": 724, "name": "Leparada"}, {"code": 234, "name": "Lohit"}, {"code": 666, "name": "Longding"}, {"code": 235, "name": "Lower Dibang Valley"}, {"code": 719, "name": "Lower Siang"}, {"code": 236, "name": "Lower Subansiri"}, {"code": 678, "name": "Namsai"}, {"code": 723, "name": "Pakke Kessang"}, {"code": 237, "name": "Papum Pare"}, {"code": 725, "name": "Shi Yomi"}, {"code": 679, "name": "Siang"}, {"code": 238, "name": "Tawang"}, {"code": 239, "name": "Tirap"}, {"code": 240, "name": "Upper Siang"}, {"code": 241, "name": "Upper Subansiri"}, {"code": 242, "name": "West Kameng"}, {"code": 243, "name": "West Siang"}], "1": [{"code": 1, "name": "Anantnag"}, {"code": 623, "name": "Bandipora"}, {"code": 3, "name": "Baramulla"}, {"code": 2, "name": "Budgam"}, {"code": 4, "name": "Doda"}, {"code": 626, "name": "Ganderbal"}, {"code": 5, "name": "Jammu"}, {"code": 7, "name": "Kathua"}, {"code": 620, "name": "Kishtwar"}, {"code": 622, "name": "Kulgam"}, {"code": 8, "name": "Kupwara"}, {"code": 10, "name": "Poonch"}, {"code": 11, "name": "Pulwama"}, {"code": 12, "name": "Rajouri"}, {"code": 621, "name": "Ramban"}, {"code": 627, "name": "Reasi"}, {"code": 624, "name": "Samba"}, {"code": 625, "name": "Shopian"}, {"code": 13, "name": "Srinagar"}, {"code": 14, "name": "Udhampur"}], "18": [{"code": 739, "name": "Bajali"}, {"code": 616, "name": "Baksa"}, {"code": 280, "name": "Barpeta"}, {"code": 705, "name": "Biswanath"}, {"code": 281, "name": "Bongaigaon"}, {"code": 282, "name": "Cachar"}, {"code": 708, "name": "Charaideo"}, {"code": 612, "name": "Chirang"}, {"code": 283, "name": "Darrang"}, {"code": 284, "name": "Dhemaji"}, {"code": 285, "name": "Dhubri"}, {"code": 286, "name": "Dibrugarh"}, {"code": 299, "name": "Dima Hasao"}, {"code": 287, "name": "Goalpara"}, {"code": 288, "name": "Golaghat"}, {"code": 289, "name": "Hailakandi"}, {"code": 709, "name": "Hojai"}, {"code": 290, "name": "Jorhat"}, {"code": 291, "name": "Kamrup"}, {"code": 618, "name": "Kamrup Metro"}, {"code": 292, "name": "Karbi Anglong"}, {"code": 294, "name": "Kokrajhar"}, {"code": 295, "name": "Lakhimpur"}, {"code": 706, "name": "Majuli"}, {"code": 296, "name": "Marigaon"}, {"code": 297, "name": "Nagaon"}, {"code": 298, "name": "Nalbari"}, {"code": 300, "name": "Sivasagar"}, {"code": 301, "name": "Sonitpur"}, {"code": 707, "name": "South Salmara Mancachar"}, {"code": 293, "name": "Sribhumi"}, {"code": 756, "name": "Tamulpur"}, {"code": 302, "name": "Tinsukia"}, {"code": 617, "name": "Udalguri"}, {"code": 710, "name": "West Karbi Anglong"}], "10": [{"code": 188, "name": "Araria"}, {"code": 611, "name": "Arwal"}, {"code": 189, "name": "Aurangabad"}, {"code": 190, "name": "Banka"}, {"code": 191, "name": "Begusarai"}, {"code": 192, "name": "Bhagalpur"}, {"code": 193, "name": "Bhojpur"}, {"code": 194, "name": "Buxar"}, {"code": 195, "name": "Darbhanga"}, {"code": 196, "name": "Gaya"}, {"code": 197, "name": "Gopalganj"}, {"code": 198, "name": "Jamui"}, {"code": 199, "name": "Jehanabad"}, {"code": 200, "name": "Kaimur (Bhabua)"}, {"code": 201, "name": "Katihar"}, {"code": 202, "name": "Khagaria"}, {"code": 203, "name": "Kishanganj"}, {"code": 204, "name": "Lakhisarai"}, {"code": 205, "name": "Madhepura"}, {"code": 206, "name": "Madhubani"}, {"code": 207, "name": "Munger"}, {"code": 208, "name": "Muzaffarpur"}, {"code": 209, "name": "Nalanda"}, {"code": 210, "name": "Nawada"}, {"code": 211, "name": "Pashchim Champaran"}, {"code": 212, "name": "Patna"}, {"code": 213, "name": "Purbi Champaran"}, {"code": 214, "name": "Purnia"}, {"code": 215, "name": "Rohtas"}, {"code": 216, "name": "Saharsa"}, {"code": 217, "name": "Samastipur"}, {"code": 218, "name": "Saran"}, {"code": 219, "name": "Sheikhpura"}, {"code": 220, "name": "Sheohar"}, {"code": 221, "name": "Sitamarhi"}, {"code": 222, "name": "Siwan"}, {"code": 223, "name": "Supaul"}, {"code": 224, "name": "Vaishali"}], "4": [{"code": 44, "name": "Chandigarh"}], "22": [{"code": 646, "name": "Balod"}, {"code": 644, "name": "Balodabazar-Bhatapara"}, {"code": 649, "name": "Balrampur-Ramanujganj"}, {"code": 374, "name": "Bastar"}, {"code": 650, "name": "Bemetara"}, {"code": 636, "name": "Bijapur"}, {"code": 375, "name": "Bilaspur"}, {"code": 376, "name": "Dakshin Bastar Dantewada"}, {"code": 377, "name": "Dhamtari"}, {"code": 378, "name": "Durg"}, {"code": 645, "name": "Gariyaband"}, {"code": 734, "name": "Gaurela-Pendra-Marwahi"}, {"code": 379, "name": "Janjgir-Champa"}, {"code": 380, "name": "Jashpur"}, {"code": 382, "name": "Kabeerdham"}, {"code": 759, "name": "Khairagarh-Chhuikhadan-Gandai"}, {"code": 643, "name": "Kondagaon"}, {"code": 383, "name": "Korba"}, {"code": 384, "name": "Korea"}, {"code": 385, "name": "Mahasamund"}, {"code": 760, "name": "Manendragarh-Chirmiri-Bharatpur(M C B)"}, {"code": 761, "name": "Mohla-Manpur-Ambagarh Chouki"}, {"code": 647, "name": "Mungeli"}, {"code": 637, "name": "Narayanpur"}, {"code": 386, "name": "Raigarh"}, {"code": 387, "name": "Raipur"}, {"code": 388, "name": "Rajnandgaon"}, {"code": 762, "name": "Sakti"}, {"code": 763, "name": "Sarangarh-Bilaigarh"}, {"code": 642, "name": "Sukma"}, {"code": 648, "name": "Surajpur"}, {"code": 389, "name": "Surguja"}, {"code": 381, "name": "Uttar Bastar Kanker"}], "7": [{"code": 77, "name": "Central"}, {"code": 796, "name": "Central North"}, {"code": 78, "name": "East"}, {"code": 79, "name": "New Delhi"}, {"code": 80, "name": "North"}, {"code": 81, "name": "North East"}, {"code": 82, "name": "North West"}, {"code": 795, "name": "Old Delhi"}, {"code": 794, "name": "Outer North"}, {"code": 83, "name": "South"}, {"code": 670, "name": "South East"}, {"code": 84, "name": "South West"}, {"code": 85, "name": "West"}], "30": [{"code": 793, "name": "Kushavati"}, {"code": 551, "name": "North Goa"}, {"code": 552, "name": "South Goa"}], "24": [{"code": 438, "name": "Ahmedabad"}, {"code": 439, "name": "Amreli"}, {"code": 440, "name": "Anand"}, {"code": 672, "name": "Arvalli"}, {"code": 441, "name": "Banas Kantha"}, {"code": 442, "name": "Bharuch"}, {"code": 443, "name": "Bhavnagar"}, {"code": 676, "name": "Botad"}, {"code": 668, "name": "Chhotaudepur"}, {"code": 445, "name": "Dahod"}, {"code": 444, "name": "Dangs"}, {"code": 674, "name": "Devbhumi Dwarka"}, {"code": 446, "name": "Gandhinagar"}, {"code": 675, "name": "Gir Somnath"}, {"code": 447, "name": "Jamnagar"}, {"code": 448, "name": "Junagadh"}, {"code": 449, "name": "Kachchh"}, {"code": 450, "name": "Kheda"}, {"code": 451, "name": "Mahesana"}, {"code": 669, "name": "Mahisagar"}, {"code": 673, "name": "Morbi"}, {"code": 452, "name": "Narmada"}, {"code": 453, "name": "Navsari"}, {"code": 454, "name": "Panch Mahals"}, {"code": 455, "name": "Patan"}, {"code": 456, "name": "Porbandar"}, {"code": 457, "name": "Rajkot"}, {"code": 458, "name": "Sabar Kantha"}, {"code": 459, "name": "Surat"}, {"code": 460, "name": "Surendranagar"}, {"code": 641, "name": "Tapi"}, {"code": 461, "name": "Vadodara"}, {"code": 462, "name": "Valsad"}, {"code": 789, "name": "Vav-Tharad"}], "6": [{"code": 58, "name": "Ambala"}, {"code": 59, "name": "Bhiwani"}, {"code": 701, "name": "Charkhi Dadri"}, {"code": 60, "name": "Faridabad"}, {"code": 61, "name": "Fatehabad"}, {"code": 62, "name": "Gurugram"}, {"code": 792, "name": "Hansi"}, {"code": 63, "name": "Hisar"}, {"code": 64, "name": "Jhajjar"}, {"code": 65, "name": "Jind"}, {"code": 66, "name": "Kaithal"}, {"code": 67, "name": "Karnal"}, {"code": 68, "name": "Kurukshetra"}, {"code": 69, "name": "Mahendragarh"}, {"code": 604, "name": "Nuh"}, {"code": 619, "name": "Palwal"}, {"code": 70, "name": "Panchkula"}, {"code": 71, "name": "Panipat"}, {"code": 72, "name": "Rewari"}, {"code": 73, "name": "Rohtak"}, {"code": 74, "name": "Sirsa"}, {"code": 75, "name": "Sonipat"}, {"code": 76, "name": "Yamunanagar"}], "2": [{"code": 15, "name": "Bilaspur"}, {"code": 16, "name": "Chamba"}, {"code": 17, "name": "Hamirpur"}, {"code": 18, "name": "Kangra"}, {"code": 19, "name": "Kinnaur"}, {"code": 20, "name": "Kullu"}, {"code": 21, "name": "Lahaul And Spiti"}, {"code": 22, "name": "Mandi"}, {"code": 23, "name": "Shimla"}, {"code": 24, "name": "Sirmaur"}, {"code": 25, "name": "Solan"}, {"code": 26, "name": "Una"}], "20": [{"code": 322, "name": "Bokaro"}, {"code": 323, "name": "Chatra"}, {"code": 324, "name": "Deoghar"}, {"code": 325, "name": "Dhanbad"}, {"code": 326, "name": "Dumka"}, {"code": 327, "name": "East Singhbum"}, {"code": 328, "name": "Garhwa"}, {"code": 329, "name": "Giridih"}, {"code": 330, "name": "Godda"}, {"code": 331, "name": "Gumla"}, {"code": 332, "name": "Hazaribagh"}, {"code": 333, "name": "Jamtara"}, {"code": 606, "name": "Khunti"}, {"code": 334, "name": "Koderma"}, {"code": 335, "name": "Latehar"}, {"code": 336, "name": "Lohardaga"}, {"code": 337, "name": "Pakur"}, {"code": 338, "name": "Palamu"}, {"code": 607, "name": "Ramgarh"}, {"code": 339, "name": "Ranchi"}, {"code": 340, "name": "Sahebganj"}, {"code": 341, "name": "Saraikela Kharsawan"}, {"code": 342, "name": "Simdega"}, {"code": 343, "name": "West Singhbhum"}], "29": [{"code": 524, "name": "Bagalkote"}, {"code": 528, "name": "Ballari"}, {"code": 527, "name": "Belagavi"}, {"code": 526, "name": "Bengaluru Rural"}, {"code": 631, "name": "Bengaluru South"}, {"code": 525, "name": "Bengaluru Urban"}, {"code": 529, "name": "Bidar"}, {"code": 531, "name": "Chamarajanagar"}, {"code": 630, "name": "Chikkaballapura"}, {"code": 532, "name": "Chikkamagaluru"}, {"code": 533, "name": "Chitradurga"}, {"code": 534, "name": "Dakshina Kannada"}, {"code": 535, "name": "Davanagere"}, {"code": 536, "name": "Dharwad"}, {"code": 537, "name": "Gadag"}, {"code": 539, "name": "Hassan"}, {"code": 540, "name": "Haveri"}, {"code": 538, "name": "Kalaburagi"}, {"code": 541, "name": "Kodagu"}, {"code": 542, "name": "Kolar"}, {"code": 543, "name": "Koppal"}, {"code": 544, "name": "Mandya"}, {"code": 545, "name": "Mysuru"}, {"code": 546, "name": "Raichur"}, {"code": 547, "name": "Shivamogga"}, {"code": 548, "name": "Tumakuru"}, {"code": 549, "name": "Udupi"}, {"code": 550, "name": "Uttara Kannada"}, {"code": 738, "name": "Vijayanagara"}, {"code": 530, "name": "Vijayapura"}, {"code": 635, "name": "Yadgir"}], "32": [{"code": 554, "name": "Alappuzha"}, {"code": 555, "name": "Ernakulam"}, {"code": 556, "name": "Idukki"}, {"code": 557, "name": "Kannur"}, {"code": 558, "name": "Kasaragod"}, {"code": 559, "name": "Kollam"}, {"code": 560, "name": "Kottayam"}, {"code": 561, "name": "Kozhikode"}, {"code": 562, "name": "Malappuram"}, {"code": 563, "name": "Palakkad"}, {"code": 564, "name": "Pathanamthitta"}, {"code": 565, "name": "Thiruvananthapuram"}, {"code": 566, "name": "Thrissur"}, {"code": 567, "name": "Wayanad"}], "37": [{"code": 6, "name": "Kargil"}, {"code": 9, "name": "Leh Ladakh"}], "31": [{"code": 553, "name": "Lakshadweep District"}], "23": [{"code": 667, "name": "Agar-Malwa"}, {"code": 639, "name": "Alirajpur"}, {"code": 390, "name": "Anuppur"}, {"code": 391, "name": "Ashoknagar"}, {"code": 392, "name": "Balaghat"}, {"code": 393, "name": "Barwani"}, {"code": 394, "name": "Betul"}, {"code": 395, "name": "Bhind"}, {"code": 396, "name": "Bhopal"}, {"code": 397, "name": "Burhanpur"}, {"code": 398, "name": "Chhatarpur"}, {"code": 399, "name": "Chhindwara"}, {"code": 400, "name": "Damoh"}, {"code": 401, "name": "Datia"}, {"code": 402, "name": "Dewas"}, {"code": 403, "name": "Dhar"}, {"code": 404, "name": "Dindori"}, {"code": 406, "name": "Guna"}, {"code": 407, "name": "Gwalior"}, {"code": 408, "name": "Harda"}, {"code": 410, "name": "Indore"}, {"code": 411, "name": "Jabalpur"}, {"code": 412, "name": "Jhabua"}, {"code": 413, "name": "Katni"}, {"code": 405, "name": "Khandwa (East Nimar)"}, {"code": 414, "name": "Khargone (West Nimar)"}, {"code": 766, "name": "MAUGANJ"}, {"code": 784, "name": "Maihar"}, {"code": 415, "name": "Mandla"}, {"code": 416, "name": "Mandsaur"}, {"code": 417, "name": "Morena"}, {"code": 409, "name": "Narmadapuram"}, {"code": 418, "name": "Narsimhapur"}, {"code": 419, "name": "Neemuch"}, {"code": 722, "name": "Niwari"}, {"code": 785, "name": "Pandhurna"}, {"code": 420, "name": "Panna"}, {"code": 421, "name": "Raisen"}, {"code": 422, "name": "Rajgarh"}, {"code": 423, "name": "Ratlam"}, {"code": 424, "name": "Rewa"}, {"code": 425, "name": "Sagar"}, {"code": 426, "name": "Satna"}, {"code": 427, "name": "Sehore"}, {"code": 428, "name": "Seoni"}, {"code": 429, "name": "Shahdol"}, {"code": 430, "name": "Shajapur"}, {"code": 431, "name": "Sheopur"}, {"code": 432, "name": "Shivpuri"}, {"code": 433, "name": "Sidhi"}, {"code": 638, "name": "Singrauli"}, {"code": 434, "name": "Tikamgarh"}, {"code": 435, "name": "Ujjain"}, {"code": 436, "name": "Umaria"}, {"code": 437, "name": "Vidisha"}], "27": [{"code": 466, "name": "Ahilyanagar"}, {"code": 467, "name": "Akola"}, {"code": 468, "name": "Amravati"}, {"code": 470, "name": "Beed"}, {"code": 471, "name": "Bhandara"}, {"code": 472, "name": "Buldhana"}, {"code": 473, "name": "Chandrapur"}, {"code": 469, "name": "Chhatrapati Sambhajinagar"}, {"code": 488, "name": "Dharashiv"}, {"code": 474, "name": "Dhule"}, {"code": 475, "name": "Gadchiroli"}, {"code": 476, "name": "Gondia"}, {"code": 477, "name": "Hingoli"}, {"code": 478, "name": "Jalgaon"}, {"code": 479, "name": "Jalna"}, {"code": 480, "name": "Kolhapur"}, {"code": 481, "name": "Latur"}, {"code": 482, "name": "Mumbai"}, {"code": 483, "name": "Mumbai Suburban"}, {"code": 484, "name": "Nagpur"}, {"code": 485, "name": "Nanded"}, {"code": 486, "name": "Nandurbar"}, {"code": 487, "name": "Nashik"}, {"code": 665, "name": "Palghar"}, {"code": 489, "name": "Parbhani"}, {"code": 490, "name": "Pune"}, {"code": 491, "name": "Raigad"}, {"code": 492, "name": "Ratnagiri"}, {"code": 493, "name": "Sangli"}, {"code": 494, "name": "Satara"}, {"code": 495, "name": "Sindhudurg"}, {"code": 496, "name": "Solapur"}, {"code": 497, "name": "Thane"}, {"code": 498, "name": "Wardha"}, {"code": 499, "name": "Washim"}, {"code": 500, "name": "Yavatmal"}], "14": [{"code": 252, "name": "Bishnupur"}, {"code": 253, "name": "Chandel"}, {"code": 254, "name": "Churachandpur"}, {"code": 255, "name": "Imphal East"}, {"code": 256, "name": "Imphal West"}, {"code": 713, "name": "Jiribam"}, {"code": 711, "name": "Kakching"}, {"code": 717, "name": "Kamjong"}, {"code": 712, "name": "Kangpokpi"}, {"code": 714, "name": "Noney"}, {"code": 715, "name": "Pherzawl"}, {"code": 257, "name": "Senapati"}, {"code": 258, "name": "Tamenglong"}, {"code": 716, "name": "Tengnoupal"}, {"code": 259, "name": "Thoubal"}, {"code": 260, "name": "Ukhrul"}], "17": [{"code": 273, "name": "East Garo Hills"}, {"code": 657, "name": "East Jaintia Hills"}, {"code": 274, "name": "East Khasi Hills"}, {"code": 740, "name": "Eastern West Khasi Hills"}, {"code": 656, "name": "North Garo Hills"}, {"code": 276, "name": "Ri Bhoi"}, {"code": 277, "name": "South Garo Hills"}, {"code": 663, "name": "South West Garo Hills"}, {"code": 658, "name": "South West Khasi Hills"}, {"code": 278, "name": "West Garo Hills"}, {"code": 275, "name": "West Jaintia Hills"}, {"code": 279, "name": "West Khasi Hills"}], "15": [{"code": 261, "name": "Aizawl"}, {"code": 262, "name": "Champhai"}, {"code": 726, "name": "Hnahthial"}, {"code": 728, "name": "Khawzawl"}, {"code": 263, "name": "Kolasib"}, {"code": 264, "name": "Lawngtlai"}, {"code": 265, "name": "Lunglei"}, {"code": 266, "name": "Mamit"}, {"code": 727, "name": "Saitual"}, {"code": 268, "name": "Serchhip"}, {"code": 267, "name": "Siaha"}], "13": [{"code": 758, "name": "Chumoukedima"}, {"code": 244, "name": "Dimapur"}, {"code": 614, "name": "Kiphire"}, {"code": 245, "name": "Kohima"}, {"code": 615, "name": "Longleng"}, {"code": 788, "name": "Meluri"}, {"code": 246, "name": "Mokokchung"}, {"code": 247, "name": "Mon"}, {"code": 764, "name": "Niuland"}, {"code": 736, "name": "Noklak"}, {"code": 613, "name": "Peren"}, {"code": 248, "name": "Phek"}, {"code": 765, "name": "Shamator"}, {"code": 757, "name": "Tseminyu"}, {"code": 249, "name": "Tuensang"}, {"code": 250, "name": "Wokha"}, {"code": 251, "name": "Zunheboto"}], "21": [{"code": 344, "name": "Angul"}, {"code": 345, "name": "Balangir"}, {"code": 346, "name": "Balasore"}, {"code": 347, "name": "Bargarh"}, {"code": 348, "name": "Bhadrak"}, {"code": 349, "name": "Boudh"}, {"code": 350, "name": "Cuttack"}, {"code": 351, "name": "Deogarh"}, {"code": 352, "name": "Dhenkanal"}, {"code": 353, "name": "Gajapati"}, {"code": 354, "name": "Ganjam"}, {"code": 355, "name": "Jagatsinghapur"}, {"code": 356, "name": "Jajpur"}, {"code": 357, "name": "Jharsuguda"}, {"code": 358, "name": "Kalahandi"}, {"code": 359, "name": "Kandhamal"}, {"code": 360, "name": "Kendrapara"}, {"code": 361, "name": "Keonjhar"}, {"code": 362, "name": "Khordha"}, {"code": 363, "name": "Koraput"}, {"code": 364, "name": "Malkangiri"}, {"code": 365, "name": "Mayurbhanj"}, {"code": 366, "name": "Nabarangpur"}, {"code": 367, "name": "Nayagarh"}, {"code": 368, "name": "Nuapada"}, {"code": 369, "name": "Puri"}, {"code": 370, "name": "Rayagada"}, {"code": 371, "name": "Sambalpur"}, {"code": 372, "name": "Sonepur"}, {"code": 373, "name": "Sundargarh"}], "34": [{"code": 598, "name": "Karaikal"}, {"code": 600, "name": "Puducherry"}], "3": [{"code": 27, "name": "Amritsar"}, {"code": 605, "name": "Barnala"}, {"code": 28, "name": "Bathinda"}, {"code": 29, "name": "Faridkot"}, {"code": 30, "name": "Fatehgarh Sahib"}, {"code": 651, "name": "Fazilka"}, {"code": 31, "name": "Ferozepur"}, {"code": 32, "name": "Gurdaspur"}, {"code": 33, "name": "Hoshiarpur"}, {"code": 34, "name": "Jalandhar"}, {"code": 35, "name": "Kapurthala"}, {"code": 36, "name": "Ludhiana"}, {"code": 737, "name": "Malerkotla"}, {"code": 37, "name": "Mansa"}, {"code": 38, "name": "Moga"}, {"code": 662, "name": "Pathankot"}, {"code": 41, "name": "Patiala"}, {"code": 42, "name": "Rupnagar"}, {"code": 608, "name": "S.A.S Nagar"}, {"code": 43, "name": "Sangrur"}, {"code": 40, "name": "Shahid Bhagat Singh Nagar"}, {"code": 39, "name": "Sri Muktsar Sahib"}, {"code": 609, "name": "Tarn Taran"}], "8": [{"code": 86, "name": "Ajmer"}, {"code": 87, "name": "Alwar"}, {"code": 775, "name": "Balotra"}, {"code": 88, "name": "Banswara"}, {"code": 89, "name": "Baran"}, {"code": 90, "name": "Barmer"}, {"code": 774, "name": "Beawar"}, {"code": 91, "name": "Bharatpur"}, {"code": 92, "name": "Bhilwara"}, {"code": 93, "name": "Bikaner"}, {"code": 94, "name": "Bundi"}, {"code": 95, "name": "Chittorgarh"}, {"code": 96, "name": "Churu"}, {"code": 97, "name": "Dausa"}, {"code": 767, "name": "Deeg"}, {"code": 98, "name": "Dholpur"}, {"code": 768, "name": "Didwana-Kuchaman"}, {"code": 99, "name": "Dungarpur"}, {"code": 100, "name": "Ganganagar"}, {"code": 101, "name": "Hanumangarh"}, {"code": 102, "name": "Jaipur"}, {"code": 103, "name": "Jaisalmer"}, {"code": 104, "name": "Jalore"}, {"code": 105, "name": "Jhalawar"}, {"code": 106, "name": "Jhunjhunu"}, {"code": 107, "name": "Jodhpur"}, {"code": 108, "name": "Karauli"}, {"code": 770, "name": "Khairthal-Tijara"}, {"code": 109, "name": "Kota"}, {"code": 782, "name": "Kotputli-Behror"}, {"code": 110, "name": "Nagaur"}, {"code": 111, "name": "Pali"}, {"code": 772, "name": "Phalodi"}, {"code": 629, "name": "Pratapgarh"}, {"code": 112, "name": "Rajsamand"}, {"code": 777, "name": "Salumbar"}, {"code": 113, "name": "Sawai Madhopur"}, {"code": 114, "name": "Sikar"}, {"code": 115, "name": "Sirohi"}, {"code": 116, "name": "Tonk"}, {"code": 117, "name": "Udaipur"}], "11": [{"code": 225, "name": "Gangtok"}, {"code": 228, "name": "Gyalshing"}, {"code": 226, "name": "Mangan"}, {"code": 227, "name": "Namchi"}, {"code": 741, "name": "Pakyong"}, {"code": 742, "name": "Soreng"}], "33": [{"code": 610, "name": "Ariyalur"}, {"code": 730, "name": "Chengalpattu"}, {"code": 568, "name": "Chennai"}, {"code": 569, "name": "Coimbatore"}, {"code": 570, "name": "Cuddalore"}, {"code": 571, "name": "Dharmapuri"}, {"code": 572, "name": "Dindigul"}, {"code": 573, "name": "Erode"}, {"code": 729, "name": "Kallakurichi"}, {"code": 574, "name": "Kancheepuram"}, {"code": 575, "name": "Kanniyakumari"}, {"code": 576, "name": "Karur"}, {"code": 577, "name": "Krishnagiri"}, {"code": 578, "name": "Madurai"}, {"code": 735, "name": "Mayiladuthurai"}, {"code": 579, "name": "Nagapattinam"}, {"code": 580, "name": "Namakkal"}, {"code": 581, "name": "Perambalur"}, {"code": 582, "name": "Pudukkottai"}, {"code": 583, "name": "Ramanathapuram"}, {"code": 731, "name": "Ranipet"}, {"code": 584, "name": "Salem"}, {"code": 585, "name": "Sivaganga"}, {"code": 733, "name": "Tenkasi"}, {"code": 586, "name": "Thanjavur"}, {"code": 587, "name": "The Nilgiris"}, {"code": 588, "name": "Theni"}, {"code": 589, "name": "Thiruvallur"}, {"code": 590, "name": "Thiruvarur"}, {"code": 594, "name": "Thoothukkudi"}, {"code": 591, "name": "Tiruchirappalli"}, {"code": 592, "name": "Tirunelveli"}, {"code": 732, "name": "Tirupathur"}, {"code": 634, "name": "Tiruppur"}, {"code": 593, "name": "Tiruvannamalai"}, {"code": 595, "name": "Vellore"}, {"code": 596, "name": "Viluppuram"}, {"code": 597, "name": "Virudhunagar"}], "36": [{"code": 501, "name": "Adilabad"}, {"code": 690, "name": "Bhadradri Kothagudem"}, {"code": 686, "name": "Hanumakonda"}, {"code": 507, "name": "Hyderabad"}, {"code": 681, "name": "Jagitial"}, {"code": 689, "name": "Jangoan"}, {"code": 687, "name": "Jayashankar Bhupalapally"}, {"code": 695, "name": "Jogulamba Gadwal"}, {"code": 685, "name": "Kamareddy"}, {"code": 508, "name": "Karimnagar"}, {"code": 509, "name": "Khammam"}, {"code": 699, "name": "Kumuram Bheem Asifabad"}, {"code": 688, "name": "Mahabubabad"}, {"code": 512, "name": "Mahabubnagar"}, {"code": 684, "name": "Mancherial"}, {"code": 513, "name": "Medak"}, {"code": 700, "name": "Medchal Malkajgiri"}, {"code": 720, "name": "Mulugu"}, {"code": 694, "name": "Nagarkurnool"}, {"code": 514, "name": "Nalgonda"}, {"code": 721, "name": "Narayanpet"}, {"code": 680, "name": "Nirmal"}, {"code": 516, "name": "Nizamabad"}, {"code": 682, "name": "Peddapalli"}, {"code": 683, "name": "Rajanna Sircilla"}, {"code": 518, "name": "Ranga Reddy"}, {"code": 691, "name": "Sangareddy"}, {"code": 692, "name": "Siddipet"}, {"code": 696, "name": "Suryapet"}, {"code": 698, "name": "Vikarabad"}, {"code": 693, "name": "Wanaparthy"}, {"code": 522, "name": "Warangal"}, {"code": 697, "name": "Yadadri Bhuvanagiri"}], "38": [{"code": 465, "name": "Dadra And Nagar Haveli"}, {"code": 463, "name": "Daman"}, {"code": 464, "name": "Diu"}], "16": [{"code": 269, "name": "Dhalai"}, {"code": 654, "name": "Gomati"}, {"code": 652, "name": "Khowai"}, {"code": 270, "name": "North Tripura"}, {"code": 653, "name": "Sepahijala"}, {"code": 271, "name": "South Tripura"}, {"code": 655, "name": "Unakoti"}, {"code": 272, "name": "West Tripura"}], "5": [{"code": 45, "name": "Almora"}, {"code": 46, "name": "Bageshwar"}, {"code": 47, "name": "Chamoli"}, {"code": 48, "name": "Champawat"}, {"code": 49, "name": "Dehradun"}, {"code": 50, "name": "Haridwar"}, {"code": 51, "name": "Nainital"}, {"code": 52, "name": "Pauri Garhwal"}, {"code": 53, "name": "Pithoragarh"}, {"code": 54, "name": "Rudraprayag"}, {"code": 55, "name": "Tehri Garhwal"}, {"code": 56, "name": "Udham Singh Nagar"}, {"code": 57, "name": "Uttarkashi"}], "9": [{"code": 118, "name": "Agra"}, {"code": 119, "name": "Aligarh"}, {"code": 121, "name": "Ambedkar Nagar"}, {"code": 640, "name": "Amethi"}, {"code": 154, "name": "Amroha"}, {"code": 122, "name": "Auraiya"}, {"code": 140, "name": "Ayodhya"}, {"code": 123, "name": "Azamgarh"}, {"code": 124, "name": "Baghpat"}, {"code": 125, "name": "Bahraich"}, {"code": 126, "name": "Ballia"}, {"code": 127, "name": "Balrampur"}, {"code": 128, "name": "Banda"}, {"code": 129, "name": "Bara Banki"}, {"code": 130, "name": "Bareilly"}, {"code": 131, "name": "Basti"}, {"code": 179, "name": "Bhadohi"}, {"code": 132, "name": "Bijnor"}, {"code": 133, "name": "Budaun"}, {"code": 134, "name": "Bulandshahr"}, {"code": 135, "name": "Chandauli"}, {"code": 136, "name": "Chitrakoot"}, {"code": 137, "name": "Deoria"}, {"code": 138, "name": "Etah"}, {"code": 139, "name": "Etawah"}, {"code": 141, "name": "Farrukhabad"}, {"code": 142, "name": "Fatehpur"}, {"code": 143, "name": "Firozabad"}, {"code": 144, "name": "Gautam Buddha Nagar"}, {"code": 145, "name": "Ghaziabad"}, {"code": 146, "name": "Ghazipur"}, {"code": 147, "name": "Gonda"}, {"code": 148, "name": "Gorakhpur"}, {"code": 149, "name": "Hamirpur"}, {"code": 661, "name": "Hapur"}, {"code": 150, "name": "Hardoi"}, {"code": 163, "name": "Hathras"}, {"code": 151, "name": "Jalaun"}, {"code": 152, "name": "Jaunpur"}, {"code": 153, "name": "Jhansi"}, {"code": 155, "name": "Kannauj"}, {"code": 156, "name": "Kanpur Dehat"}, {"code": 157, "name": "Kanpur Nagar"}, {"code": 633, "name": "Kasganj"}, {"code": 158, "name": "Kaushambi"}, {"code": 159, "name": "Kheri"}, {"code": 160, "name": "Kushinagar"}, {"code": 161, "name": "Lalitpur"}, {"code": 162, "name": "Lucknow"}, {"code": 165, "name": "Mahoba"}, {"code": 164, "name": "Mahrajganj"}, {"code": 166, "name": "Mainpuri"}, {"code": 167, "name": "Mathura"}, {"code": 168, "name": "Mau"}, {"code": 169, "name": "Meerut"}, {"code": 170, "name": "Mirzapur"}, {"code": 171, "name": "Moradabad"}, {"code": 172, "name": "Muzaffarnagar"}, {"code": 173, "name": "Pilibhit"}, {"code": 174, "name": "Pratapgarh"}, {"code": 120, "name": "Prayagraj"}, {"code": 175, "name": "Rae Bareli"}, {"code": 176, "name": "Rampur"}, {"code": 177, "name": "Saharanpur"}, {"code": 659, "name": "Sambhal"}, {"code": 178, "name": "Sant Kabir Nagar"}, {"code": 180, "name": "Shahjahanpur"}, {"code": 660, "name": "Shamli"}, {"code": 181, "name": "Shrawasti"}, {"code": 182, "name": "Siddharthnagar"}, {"code": 183, "name": "Sitapur"}, {"code": 184, "name": "Sonbhadra"}, {"code": 185, "name": "Sultanpur"}, {"code": 186, "name": "Unnao"}, {"code": 187, "name": "Varanasi"}], "19": [{"code": 664, "name": "Alipurduar"}, {"code": 305, "name": "Bankura"}, {"code": 307, "name": "Birbhum"}, {"code": 308, "name": "Cooch Behar"}, {"code": 310, "name": "Dakshin Dinajpur"}, {"code": 309, "name": "Darjeeling"}, {"code": 312, "name": "Hooghly"}, {"code": 313, "name": "Howrah"}, {"code": 314, "name": "Jalpaiguri"}, {"code": 703, "name": "Jhargram"}, {"code": 702, "name": "Kalimpong"}, {"code": 315, "name": "Kolkata"}, {"code": 316, "name": "Malda"}, {"code": 319, "name": "Murshidabad"}, {"code": 320, "name": "Nadia"}, {"code": 303, "name": "North 24 Parganas"}, {"code": 704, "name": "Paschim Bardhaman"}, {"code": 318, "name": "Paschim Medinipur"}, {"code": 306, "name": "Purba Bardhaman"}, {"code": 317, "name": "Purba Medinipur"}, {"code": 321, "name": "Purulia"}, {"code": 304, "name": "South 24 Parganas"}, {"code": 311, "name": "Uttar Dinajpur"}]};
+
+
+const ZONE_STATES = {
+  NR:   [7,3,6,1,9,5,2,8,37],
+  NER:  [9,10],
+  NFR:  [18,19,10,17,12,13,14,15,16],
+  ER:   [19,20,10],
+  SER:  [19,21,20],
+  SCR:  [36,27,28,29],
+  SR:   [33,32,28,29],
+  CR:   [27,23,29],
+  WR:   [27,24,8],
+  SWR:  [29,30,28,27],
+  NWR:  [8,24,3,6],
+  WCR:  [23,8,9],
+  NCR:  [9,23,8],
+  SECR: [22,27,23],
+  ECoR: [21,28,22],
+  ECR:  [10,20,9],
+  KR:   [27,30,29],
+  SCoR: [28,36,21],
+};
+
+
+const DIVS = {
+  NR:['UMB','FZR','DLI','MB','LKO','MRJ'], NER:['IZN','LKO','BSB'],
+  NFR:['APDJ','KIR','LMG','RNY','TSK'],    ER:['ASN','HWH','MLD','SDAH'],
+  SER:['ADRA','CKP','KGP','RNC'],           SCR:['SC','HYB','NED'],
+  SR:['MAS','MDU','PGT','SA','TVC','TPJ'],  CR:['BSL','CSTM','NGP','PUNE','SUR'],
+  WR:['ADI','BVC','MMCT','RJT','RTM','BRC'],SWR:['SBC','UBL','MYS'],
+  NWR:['AII','BKN','JP','JU'],              WCR:['BPL','JBP','KOTA'],
+  NCR:['AGC','JHS','PRYJ'],                 SECR:['BSP','NGP','R'],
+  ECoR:['KUR','VSKP','SBP'],                ECR:['DNR','DHN','MGS','SPJ','SON'],
+  KR:['RN','KAWR'],
+};
+
+const DESC = {
+  '37A':'Special Railway Project Declaration',
+  '7A':'CALA Nomination & Jurisdiction',
+  '20A':'Land Identification & Intent to Acquire',
+  '20E':'Land Party Identification',
+  '20F':'Compensation Calculation & Disbursement',
+  '20H':'Physical Possession of Land',
+  'Mutation':'Revenue Record Mutation (Project Complete)',
+};
+
+// Populate day dropdowns
+['t1-dd','t2-dd'].forEach(id => {
+  const s = document.getElementById(id);
+  for (let d=1; d<=31; d++) {
+    const o = document.createElement('option');
+    o.value = String(d).padStart(2,'0');
+    o.text  = String(d).padStart(2,'0');
+    s.add(o);
+  }
+});
+
+// Populate day dropdowns — default = today's date
+const today = new Date();
+const curD = String(today.getDate()).padStart(2,'0');
+const curM = String(today.getMonth()+1).padStart(2,'0');
+const curY = today.getFullYear();
+
+['t1-dd','t2-dd'].forEach(id => {
+  const s = document.getElementById(id);
+  for (let d=1; d<=31; d++) {
+    const o=document.createElement('option');
+    o.value=String(d).padStart(2,'0');
+    o.text=String(d).padStart(2,'0');
+    if(String(d).padStart(2,'0')===curD) o.selected=true;
+    s.add(o);
+  }
+});
+
+// Set current month as default in both month dropdowns
+['t1-mm','t2-mm'].forEach(id => {
+  const s = document.getElementById(id);
+  for (let i=0; i<s.options.length; i++) {
+    if(s.options[i].value===curM) { s.selectedIndex=i; break; }
+  }
+});
+
+// Populate year dropdowns — both from 1985 to 2060, default = current year
+['t1-yy','t2-yy'].forEach(id => {
+  const s = document.getElementById(id);
+  for (let y=2060; y>=1985; y--) {
+    const o=document.createElement('option');
+    o.value=y; o.text=y;
+    if(y===curY) o.selected=true;
+    s.add(o);
+  }
+});
+
+function getDate(dd, mm, yy) {
+  const d=document.getElementById(dd).value;
+  const m=document.getElementById(mm).value;
+  const y=document.getElementById(yy).value;
+  if(!d||!m||!y) return '';
+  return `${d}-${m}-${y}`;
+}
+function getDateDisplay(dd, mm, yy) {
+  const d=document.getElementById(dd).value;
+  const m=document.getElementById(mm).value;
+  const y=document.getElementById(yy).value;
+  if(!d||!m||!y) return '';
+  return `${d}/${m}/${y}`;
+}
+
+function switchTab(id, btn) {
+  document.getElementById('tab-t1').style.display = id==='t1'?'block':'none';
+  document.getElementById('tab-t2').style.display = id==='t2'?'block':'none';
+  document.querySelectorAll('.tab-nav button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function loadDiv() {
+  const z=document.getElementById('t1-zone').value;
+  // Load divisions
+  const ds=document.getElementById('t1-div');
+  ds.innerHTML='<option value="">-- Select Division --</option>';
+  (DIVS[z]||[]).forEach(d=>{const o=document.createElement('option');o.value=d;o.text=d;ds.add(o);});
+
+  // Load states for this zone
+  const ss=document.getElementById('t1-states');
+  ss.innerHTML='<option value="">-- Select State --</option>';
+  const zoneSCodes = ZONE_STATES[z]||[];
+  STATES_DATA.filter(s=>zoneSCodes.includes(s.code))
+    .sort((a,b)=>a.name.localeCompare(b.name))
+    .forEach(s=>{
+      const o=document.createElement('option');
+      o.value=s.code;           // value = code only (sent to API)
+      o.text=`${s.code} (${s.name})`;  // display = code (name) for user
+      ss.add(o);
+    });
+
+  // Reset district
+  document.getElementById('t1-dists').innerHTML='<option value="">-- Select State First --</option>';
+}
+
+function loadDistricts() {
+  const sc = document.getElementById('t1-states').value;
+  const dd = document.getElementById('t1-dists');
+  dd.innerHTML='<option value="">-- Select District --</option>';
+  if(!sc) return;
+  const dists = STATE_DISTRICTS[String(sc)]||[];
+  dists.forEach(d=>{
+    const o=document.createElement('option');
+    o.value=d.code;                      // value = code only
+    o.text=`${d.code} (${d.name})`;     // display = code (name)
+    dd.add(o);
+  });
+}
+
+function showSpin(id){document.getElementById(id).classList.add('show');}
+function hideSpin(id){document.getElementById(id).classList.remove('show');}
+function showAlert(id,msg){const el=document.getElementById(id);el.className='alert-box show alert-err';el.textContent=msg;}
+function hideAlert(id){document.getElementById(id).classList.remove('show');}
+function showRes(id){document.getElementById(id).classList.add('show');}
+function hideRes(id){document.getElementById(id).classList.remove('show');}
+
+// TASK 1
+async function predictStages() {
+  const zone  = document.getElementById('t1-zone').value;
+  const div   = document.getElementById('t1-div').value;
+  const stage = document.getElementById('t1-stage').value;
+  const date  = getDate('t1-dd','t1-mm','t1-yy');
+  const disp  = getDateDisplay('t1-dd','t1-mm','t1-yy');
+  const states= document.getElementById('t1-states').value||'3';
+  const dists = document.getElementById('t1-dists').value||'27';
+  const govt  = parseFloat(document.getElementById('t1-govt').value)||30;
+  const priv  = parseFloat(document.getElementById('t1-priv').value)||60;
+  const forest= parseFloat(document.getElementById('t1-forest').value)||5;
+  const cc    = parseInt(document.getElementById('t1-cc').value)||0;
+
+  if(!zone) return showAlert('al1','Please select a Railway Zone.');
+  if(!date) return showAlert('al1','Please select Day, Month and Year for the current stage date.');
+
+  hideAlert('al1'); hideRes('res1'); showSpin('sp1');
+  try {
+    const r = await fetch(`${API}/api/predict_stages`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        railway:zone, division:div||'DLI', current_stage:stage,
+        current_date:date, states, districts:dists,
+        government_land:govt, private_land:priv,
+        forest_area:forest, court_case_count:cc, active_court_cases:0
+      })
+    });
+    const d=await r.json();
+    if(!d.success) throw new Error(d.error||'Prediction failed.');
+    renderT1(d, stage, disp);
+  } catch(e) {
+    showAlert('al1','⚠  '+e.message+'  |  Ensure Flask API is running on localhost:5000');
+  } finally { hideSpin('sp1'); }
+}
+
+function renderT1(d, curStage, curDisp) {
+  const preds=d.predictions;
+  const mut=preds.find(p=>p.stage==='Mutation');
+  document.getElementById('sum1').innerHTML=`
+    <div class="sum-box"><div class="s-lbl">Current Stage</div><div class="s-val c1">${curStage}</div></div>
+    <div class="sum-box"><div class="s-lbl">Stages Remaining</div><div class="s-val c3">${preds.length}</div></div>
+    <div class="sum-box"><div class="s-lbl">Days to Mutation</div><div class="s-val c4">${mut?mut.gap_from_now:'N/A'}</div></div>
+    <div class="sum-box"><div class="s-lbl">Expected Mutation Date</div><div class="s-val c2" style="font-size:15px">${mut?mut.predicted_date.replace(/-/g,'/'):'N/A'}</div></div>`;
+
+  let html=`
+    <div class="tl-item">
+      <div class="tl-dot dot-cur">&#10003;</div>
+      <div class="tl-box cur-box">
+        <div class="tl-stage-name"><span class="pill p${curStage}">${curStage}</span>Current Stage</div>
+        <div class="tl-date">${curDisp}</div>
+        <div class="tl-meta">Project is currently at this notification stage</div>
+      </div>
+    </div>`;
+
+  preds.forEach((p,i)=>{
+    const isFinal=p.stage==='Mutation';
+    html+=`
+      <div class="tl-item">
+        <div class="tl-dot ${isFinal?'dot-end':'dot-next'}">${i+1}</div>
+        <div class="tl-box">
+          <div class="tl-stage-name"><span class="pill ${isFinal?'pMut':'p'+p.stage}">${p.stage}</span>${DESC[p.stage]||''}</div>
+          <div class="tl-date">${p.predicted_date.replace(/-/g,'/')}</div>
+          <div class="tl-meta">~${p.predicted_days} days from previous stage &nbsp;|&nbsp; ${p.gap_from_now} days from current stage</div>
+        </div>
+      </div>`;
+  });
+  document.getElementById('tl1').innerHTML=html;
+  showRes('res1');
+}
+
+function clearT1() {
+  ['t1-zone','t1-div','t1-stage','t1-dd','t1-mm','t1-yy',
+   't1-govt','t1-priv','t1-forest'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('t1-cc').value='0';
+  document.getElementById('t1-div').innerHTML='<option value="">-- Select Zone First --</option>';
+  document.getElementById('t1-states').innerHTML='<option value="">-- Select Zone First --</option>';
+  document.getElementById('t1-dists').innerHTML='<option value="">-- Select State First --</option>';
+  hideAlert('al1'); hideRes('res1');
+}
+
+// TASK 2
+async function pipelineSnap() {
+  const target=getDate('t2-dd','t2-mm','t2-yy');
+  if(!target) return showAlert('al2','Please select Day, Month and Year for the forecast date.');
+
+  hideAlert('al2'); hideRes('res2'); showSpin('sp2');
+  try {
+    const r=await fetch(`${API}/api/pipeline_snapshot`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({target_date:target})
+    });
+    const d=await r.json();
+    if(!d.success) throw new Error(d.error||'Forecast failed.');
+    renderT2(d);
+  } catch(e) {
+    showAlert('al2','⚠  '+e.message+'  |  Ensure Flask API is running on localhost:5000');
+  } finally { hideSpin('sp2'); }
+}
+
+function renderT2(d) {
+  document.getElementById('res2-head').textContent=
+    `Pipeline Forecast as on ${d.target_date}   |   Total Active Projects: ${d.total_active}`;
+  const tbody=document.getElementById('snap-body');
+  tbody.innerHTML='';
+  d.stage_snapshot.forEach((s,i)=>{
+    const pct=s.percentage;
+    const bc=pct>=70?'bh':pct>=35?'bm':'bl';
+    const pc=s.stage==='Mutation'?'pMut':'p'+s.stage;
+    tbody.innerHTML+=`
+      <tr>
+        <td>${i+1}</td>
+        <td><span class="pill ${pc}">${s.stage}</span></td>
+        <td>${DESC[s.stage]||''}</td>
+        <td><span class="count-big">${s.projects_reached}</span> / ${d.total_active}</td>
+        <td><strong>${pct}%</strong></td>
+        <td><div class="bar-wrap"><div class="bar-fill ${bc}" style="width:${pct}%"></div></div></td>
+        <td>${s.stage==='37A'?'0 days':s.median_days_needed+' days'}</td>
+      </tr>`;
+  });
+  showRes('res2');
+}
+
+function clearT2() {
+  ['t2-dd','t2-mm','t2-yy'].forEach(id=>document.getElementById(id).value='');
+  hideAlert('al2'); hideRes('res2');
+}
+</script>
+</body>
+</html>
