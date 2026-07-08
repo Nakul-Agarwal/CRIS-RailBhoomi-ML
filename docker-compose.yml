@@ -1,0 +1,31 @@
+# ============================================================
+# Rail Bhoomi ML — Docker Compose
+# Even simpler than docker run — just use docker-compose up
+# ============================================================
+#
+# START:   docker-compose up -d
+# STOP:    docker-compose down
+# LOGS:    docker-compose logs -f
+# RETRAIN: docker-compose exec railbhoomi python3 train_model.py
+#          docker-compose restart
+# ============================================================
+
+version: '3.8'
+
+services:
+  railbhoomi:
+    build: .
+    container_name: railbhoomi-ml
+    ports:
+      - "5000:5000"
+    restart: always        # Auto-restart on server reboot
+    volumes:
+      - ./logs:/app/logs   # Persist logs outside container
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
