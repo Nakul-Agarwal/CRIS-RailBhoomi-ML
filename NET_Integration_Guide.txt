@@ -1,131 +1,161 @@
 ================================================================
   RAIL BHOOMI ML — .NET INTEGRATION GUIDE FOR CRIS DEVELOPER
   AI-Based Project Milestone Prediction System
-  Author : Nakul Agarwal, CRIS Internship 2026
+  Author    : Nakul Agarwal | Roll 23EC102
+  Mentor    : Mr. Pankaj Motwani (AGM, CEP-1)
+  Organisation : CRIS, CEP1 Section, New Delhi
+  Internship   : 18 May – 31 July 2026
 ================================================================
-
+ 
 OVERVIEW
 ────────
-The Rail Bhoomi ML API runs as a Windows Service on port 5000
-on the same server as Rail Bhoomi. The .NET portal calls it
-internally via HttpClient. The user stays completely within
-the Rail Bhoomi portal — no external redirects, no new window.
-
-
-STEP 1 — INSTALL THE WINDOWS SERVICE (one time only)
-──────────────────────────────────────────────────────
-Open Command Prompt as Administrator, navigate to the
-RailBhoomi_Production folder and run:
-
-    python install_service.py install
-
-That is all. The service:
-  - Installs all Python dependencies automatically
-  - Trains the ML model automatically
-  - Registers as a Windows Service
-  - Starts automatically
-  - Restarts automatically on server reboot
-  - Restarts automatically if it ever crashes
-
+The Rail Bhoomi ML API runs as a background service on the
+same server as Rail Bhoomi. The .NET portal calls it
+internally. The user stays completely within the Rail Bhoomi
+portal — no external redirects, no new window, no separate
+system visible to the user.
+ 
+ 
+════════════════════════════════════════════════════════════
+  STEP 1 — START THE ML SERVICE (one time only)
+════════════════════════════════════════════════════════════
+ 
+OPTION A — Using Docker (Recommended)
+───────────────────────────────────────
+Install Docker Desktop from: https://www.docker.com
+Then run ONE command:
+ 
+  docker-compose up -d
+ 
+The service:
+  ✅ Starts automatically
+  ✅ Restarts automatically on server reboot
+  ✅ No Python installation needed
+  ✅ Runs on http://localhost:5000
+ 
 Verify it is running:
-    python install_service.py status
-    OR visit: http://localhost:5000/api/health
-
-
-STEP 2 — ADD MENU ITEM IN RAIL BHOOMI (one time only)
-───────────────────────────────────────────────────────
-In the Rail Bhoomi navigation menu, add:
-
-    MIS Reports → Prediction Analysis
-
+  http://localhost:5000/api/health
+  Should return: { "status": "ok", "active_projects": 4260 }
+ 
+ 
+OPTION B — Using Python directly
+──────────────────────────────────
+If Docker is not available, install Python 3.8+ then run:
+ 
+  pip install -r requirements.txt
+  python train_model.py
+  python app.py
+ 
+Service runs on http://localhost:5000
+ 
+ 
+════════════════════════════════════════════════════════════
+  STEP 2 — ADD MENU ITEM IN RAIL BHOOMI (one time only)
+════════════════════════════════════════════════════════════
+ 
+In the Rail Bhoomi navigation menu add:
+ 
+  MIS Reports → Prediction Analysis
+ 
 This link should open the page created in Step 3.
-
-
-STEP 3 — CREATE THE PREDICTION ANALYSIS PAGE
-─────────────────────────────────────────────
-Add a new Razor page (PredictionAnalysis.cshtml) to the
-Rail Bhoomi project. The page embeds the prediction UI
-using an iframe that points to the ML service:
-
+ 
+ 
+════════════════════════════════════════════════════════════
+  STEP 3 — CREATE PREDICTION ANALYSIS PAGE
+════════════════════════════════════════════════════════════
+ 
+Add a new Razor page to Rail Bhoomi project.
+The page embeds the prediction UI using an iFrame:
+ 
 ─── PredictionAnalysis.cshtml ───────────────────────────
-
+ 
 @page
-@model RailBhoomi.Pages.PredictionAnalysisModel
 @{
     ViewData["Title"] = "Prediction Analysis";
-    Layout = "_Layout";  // Uses existing Rail Bhoomi layout
+    Layout = "_Layout";
 }
-
+ 
 <div class="content-header">
     <h1>AI-Based Project Milestone Prediction</h1>
-    <p class="text-muted">Powered by Rail Bhoomi ML — CRIS Internship 2026</p>
+    <p class="text-muted">
+        Powered by Rail Bhoomi ML — CRIS Internship 2026
+    </p>
 </div>
-
+ 
 <iframe
     src="http://localhost:5000"
     style="width:100%; height:85vh; border:none; border-radius:4px;"
     title="Rail Bhoomi Prediction Analysis">
 </iframe>
-
+ 
 ─── End of PredictionAnalysis.cshtml ────────────────────
-
+ 
 This approach:
-  ✅ Uses the existing Rail Bhoomi layout (header, nav, footer)
+  ✅ Uses existing Rail Bhoomi layout (header, nav, footer)
   ✅ User never leaves the portal
   ✅ No CORS issues (same server, localhost)
   ✅ Zero changes to existing Rail Bhoomi code
-
-
-STEP 4 (OPTIONAL) — DIRECT API INTEGRATION
-────────────────────────────────────────────
-If you prefer to render results natively in .NET instead of
-iframe, use HttpClient to call the API directly:
-
-─── PredictionAnalysisModel.cshtml.cs ───────────────────
-
+  ✅ Zero configuration — iFrame auto-adapts to any server
+ 
+ 
+════════════════════════════════════════════════════════════
+  STEP 4 (OPTIONAL) — DIRECT API INTEGRATION IN .NET
+════════════════════════════════════════════════════════════
+ 
+If you prefer to render results natively in .NET Razor
+instead of iFrame, use HttpClient:
+ 
+─── C# Code ─────────────────────────────────────────────
+ 
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-
-public class PredictionAnalysisModel : PageModel
+ 
+public class PredictionService
 {
     private readonly HttpClient _http = new HttpClient();
     private const string API = "http://localhost:5000";
-
+ 
     // Task 1: Predict stage dates
-    public async Task<JsonElement> PredictStages(object requestBody)
+    public async Task<string> PredictStages(object requestBody)
     {
-        var json    = JsonSerializer.Serialize(requestBody);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        var response = await _http.PostAsync($"{API}/api/predict_stages", content);
-        var result  = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<JsonElement>(result);
+        var json     = JsonSerializer.Serialize(requestBody);
+        var content  = new StringContent(
+                           json, Encoding.UTF8, "application/json");
+        var response = await _http.PostAsync(
+                           $"{API}/api/predict_stages", content);
+        return await response.Content.ReadAsStringAsync();
     }
-
+ 
     // Task 2: Pipeline snapshot forecast
-    public async Task<JsonElement> PipelineSnapshot(string targetDate)
+    public async Task<string> PipelineSnapshot(string targetDate)
     {
-        var body    = new { target_date = targetDate };
-        var json    = JsonSerializer.Serialize(body);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        var response = await _http.PostAsync($"{API}/api/pipeline_snapshot", content);
-        var result  = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<JsonElement>(result);
+        var body     = new { target_date = targetDate };
+        var json     = JsonSerializer.Serialize(body);
+        var content  = new StringContent(
+                           json, Encoding.UTF8, "application/json");
+        var response = await _http.PostAsync(
+                           $"{API}/api/pipeline_snapshot", content);
+        return await response.Content.ReadAsStringAsync();
     }
 }
-
+ 
 ─── End ─────────────────────────────────────────────────
-
-
-API REFERENCE
-─────────────
+ 
+ 
+════════════════════════════════════════════════════════════
+  API REFERENCE
+════════════════════════════════════════════════════════════
+ 
 Health check:
-  GET  http://localhost:5000/api/health
+  GET http://localhost:5000/api/health
   Returns: { "status": "ok", "active_projects": 4260 }
-
-Stage prediction (Task 1):
+ 
+─────────────────────────────────────────────────────────
+Task 1 — Stage-wise Date Prediction:
   POST http://localhost:5000/api/predict_stages
-  Body:
+ 
+  Request body:
   {
     "railway":           "NR",
     "division":          "DLI",
@@ -139,49 +169,117 @@ Stage prediction (Task 1):
     "court_case_count":  0,
     "active_court_cases":0
   }
-
-Pipeline forecast (Task 2):
+ 
+  Response:
+  {
+    "success": true,
+    "current_stage": "20A",
+    "predictions": [
+      { "stage": "20E", "predicted_date": "29-09-2026",
+        "predicted_days": 321, "gap_from_now": 321 },
+      { "stage": "20F", "predicted_date": "23-01-2027",
+        "predicted_days": 116, "gap_from_now": 437 },
+      { "stage": "20H", "predicted_date": "21-03-2027",
+        "predicted_days": 57,  "gap_from_now": 494 },
+      { "stage": "Mutation", "predicted_date": "07-12-2027",
+        "predicted_days": 261, "gap_from_now": 755 }
+    ]
+  }
+ 
+─────────────────────────────────────────────────────────
+Task 2 — Pipeline Snapshot Forecast:
   POST http://localhost:5000/api/pipeline_snapshot
-  Body:
+ 
+  Request body:
   {
     "target_date": "31-12-2027"
   }
-
-
-SERVICE MANAGEMENT
-──────────────────
-Install service    :  python install_service.py install
-Remove service     :  python install_service.py remove
-Restart service    :  python install_service.py restart
-Check status       :  python install_service.py status
-
-Retrain model (when new data is in SQL Server):
-  python install_service.py restart  (after running train_model.py)
-  OR simply run retrain.bat
-
-
-UPDATING DB CONNECTION
-───────────────────────
-Open train_model.py and update these lines:
-
+ 
+  Response:
+  {
+    "success": true,
+    "target_date": "31-12-2027",
+    "total_active": 4260,
+    "stage_snapshot": [
+      { "stage": "37A", "projects_reached": 4260,
+        "percentage": 100.0 },
+      { "stage": "7A",  "projects_reached": 4260,
+        "percentage": 100.0 },
+      { "stage": "20A", "projects_reached": 4234,
+        "percentage": 99.4 },
+      { "stage": "20E", "projects_reached": 3872,
+        "percentage": 90.9 },
+      { "stage": "20F", "projects_reached": 3196,
+        "percentage": 75.0 },
+      { "stage": "20H", "projects_reached": 2431,
+        "percentage": 57.1 },
+      { "stage": "Mutation", "projects_reached": 1418,
+        "percentage": 33.3 }
+    ]
+  }
+ 
+ 
+════════════════════════════════════════════════════════════
+  UPDATING DB CONNECTION
+════════════════════════════════════════════════════════════
+ 
+Open train_model.py and update these 4 lines:
+ 
   DB_CONFIG = {
       'server':   'YOUR_SQL_SERVER_NAME',
-      'database': 'RailBhoomi_Production',
+      'database': 'YOUR_DATABASE_NAME',
       'username': 'YOUR_USERNAME',
       'password': 'YOUR_PASSWORD',
   }
-
-Then run: python install_service.py restart
-The system will fetch live data from SQL Server automatically.
-
-
-LOGS
-────
+ 
+Then retrain the model:
+ 
+  Using Docker:
+    docker exec railbhoomi-ml python3 train_model.py
+    docker restart railbhoomi-ml
+ 
+  Using Python:
+    python train_model.py
+    (restart app.py after)
+ 
+The system will automatically fetch live data from SQL
+Server and retrain on real production data.
+ 
+ 
+════════════════════════════════════════════════════════════
+  SERVICE MANAGEMENT (Docker)
+════════════════════════════════════════════════════════════
+ 
+Start service    :  docker-compose up -d
+Stop service     :  docker-compose down
+Restart service  :  docker-compose restart
+Check status     :  docker ps
+View logs        :  docker logs railbhoomi-ml
+ 
+ 
+════════════════════════════════════════════════════════════
+  LOGS
+════════════════════════════════════════════════════════════
+ 
   logs/access.log  — all API requests
   logs/error.log   — errors and warnings
-
-
+ 
+ 
+════════════════════════════════════════════════════════════
+  LIVE DEMO
+════════════════════════════════════════════════════════════
+ 
+  https://cris-railbhoomi-ml-1.onrender.com
+ 
+ 
+════════════════════════════════════════════════════════════
+  GITHUB REPOSITORY
+════════════════════════════════════════════════════════════
+ 
+  https://github.com/Nakul-Agarwal/CRIS-RailBhoomi-ML
+ 
+ 
 ================================================================
-  For support: Nakul Agarwal | Roll 23EC102 | GSV
+  Support: Nakul Agarwal | 23EC102 | Gati Shakti Vishwavidyalaya
   CRIS Internship 2026 | CEP1 Section | Rail Bhoomi
 ================================================================
