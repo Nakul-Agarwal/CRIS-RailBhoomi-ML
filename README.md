@@ -16,7 +16,7 @@ An AI-based Machine Learning system integrated with the **Rail Bhoomi portal** (
 
 ## Live Demo
 
-🔗 **[Click here to open the live prediction tool](https://railbhoomi-ml.onrender.com)**
+🔗 **[Click here to open the live prediction tool](https://cris-railbhoomi-ml-1.onrender.com)**
 
 ---
 
@@ -151,6 +151,6 @@ Open `http://localhost:5000`
 ## About
 
 **Organisation:** Centre for Railway Information Systems (CRIS), ITPI Building, ITO, New Delhi  
-**Portal:** [trial.ircep.gov.in/RABH](http://trial.ircep.gov.in/RABH)  
+**Portal:** [trial.ircep.gov.in/RABH](https://trial.ircep.gov.in/RABH/auth/users/login1.cshtml)  
 **University:** Gati Shakti Vishwavidyalaya, Vadodara  
 **Internship Duration:** 18 May – 31 July 2026
