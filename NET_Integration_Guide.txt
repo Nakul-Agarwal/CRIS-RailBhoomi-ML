@@ -1,0 +1,187 @@
+================================================================
+  RAIL BHOOMI ML — .NET INTEGRATION GUIDE FOR CRIS DEVELOPER
+  AI-Based Project Milestone Prediction System
+  Author : Nakul Agarwal, CRIS Internship 2026
+================================================================
+
+OVERVIEW
+────────
+The Rail Bhoomi ML API runs as a Windows Service on port 5000
+on the same server as Rail Bhoomi. The .NET portal calls it
+internally via HttpClient. The user stays completely within
+the Rail Bhoomi portal — no external redirects, no new window.
+
+
+STEP 1 — INSTALL THE WINDOWS SERVICE (one time only)
+──────────────────────────────────────────────────────
+Open Command Prompt as Administrator, navigate to the
+RailBhoomi_Production folder and run:
+
+    python install_service.py install
+
+That is all. The service:
+  - Installs all Python dependencies automatically
+  - Trains the ML model automatically
+  - Registers as a Windows Service
+  - Starts automatically
+  - Restarts automatically on server reboot
+  - Restarts automatically if it ever crashes
+
+Verify it is running:
+    python install_service.py status
+    OR visit: http://localhost:5000/api/health
+
+
+STEP 2 — ADD MENU ITEM IN RAIL BHOOMI (one time only)
+───────────────────────────────────────────────────────
+In the Rail Bhoomi navigation menu, add:
+
+    MIS Reports → Prediction Analysis
+
+This link should open the page created in Step 3.
+
+
+STEP 3 — CREATE THE PREDICTION ANALYSIS PAGE
+─────────────────────────────────────────────
+Add a new Razor page (PredictionAnalysis.cshtml) to the
+Rail Bhoomi project. The page embeds the prediction UI
+using an iframe that points to the ML service:
+
+─── PredictionAnalysis.cshtml ───────────────────────────
+
+@page
+@model RailBhoomi.Pages.PredictionAnalysisModel
+@{
+    ViewData["Title"] = "Prediction Analysis";
+    Layout = "_Layout";  // Uses existing Rail Bhoomi layout
+}
+
+<div class="content-header">
+    <h1>AI-Based Project Milestone Prediction</h1>
+    <p class="text-muted">Powered by Rail Bhoomi ML — CRIS Internship 2026</p>
+</div>
+
+<iframe
+    src="http://localhost:5000"
+    style="width:100%; height:85vh; border:none; border-radius:4px;"
+    title="Rail Bhoomi Prediction Analysis">
+</iframe>
+
+─── End of PredictionAnalysis.cshtml ────────────────────
+
+This approach:
+  ✅ Uses the existing Rail Bhoomi layout (header, nav, footer)
+  ✅ User never leaves the portal
+  ✅ No CORS issues (same server, localhost)
+  ✅ Zero changes to existing Rail Bhoomi code
+
+
+STEP 4 (OPTIONAL) — DIRECT API INTEGRATION
+────────────────────────────────────────────
+If you prefer to render results natively in .NET instead of
+iframe, use HttpClient to call the API directly:
+
+─── PredictionAnalysisModel.cshtml.cs ───────────────────
+
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
+
+public class PredictionAnalysisModel : PageModel
+{
+    private readonly HttpClient _http = new HttpClient();
+    private const string API = "http://localhost:5000";
+
+    // Task 1: Predict stage dates
+    public async Task<JsonElement> PredictStages(object requestBody)
+    {
+        var json    = JsonSerializer.Serialize(requestBody);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await _http.PostAsync($"{API}/api/predict_stages", content);
+        var result  = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<JsonElement>(result);
+    }
+
+    // Task 2: Pipeline snapshot forecast
+    public async Task<JsonElement> PipelineSnapshot(string targetDate)
+    {
+        var body    = new { target_date = targetDate };
+        var json    = JsonSerializer.Serialize(body);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await _http.PostAsync($"{API}/api/pipeline_snapshot", content);
+        var result  = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<JsonElement>(result);
+    }
+}
+
+─── End ─────────────────────────────────────────────────
+
+
+API REFERENCE
+─────────────
+Health check:
+  GET  http://localhost:5000/api/health
+  Returns: { "status": "ok", "active_projects": 4260 }
+
+Stage prediction (Task 1):
+  POST http://localhost:5000/api/predict_stages
+  Body:
+  {
+    "railway":           "NR",
+    "division":          "DLI",
+    "current_stage":     "20A",
+    "current_date":      "12-11-2025",
+    "states":            "7",
+    "districts":         "27",
+    "government_land":   30.0,
+    "private_land":      65.0,
+    "forest_area":       5.0,
+    "court_case_count":  0,
+    "active_court_cases":0
+  }
+
+Pipeline forecast (Task 2):
+  POST http://localhost:5000/api/pipeline_snapshot
+  Body:
+  {
+    "target_date": "31-12-2027"
+  }
+
+
+SERVICE MANAGEMENT
+──────────────────
+Install service    :  python install_service.py install
+Remove service     :  python install_service.py remove
+Restart service    :  python install_service.py restart
+Check status       :  python install_service.py status
+
+Retrain model (when new data is in SQL Server):
+  python install_service.py restart  (after running train_model.py)
+  OR simply run retrain.bat
+
+
+UPDATING DB CONNECTION
+───────────────────────
+Open train_model.py and update these lines:
+
+  DB_CONFIG = {
+      'server':   'YOUR_SQL_SERVER_NAME',
+      'database': 'RailBhoomi_Production',
+      'username': 'YOUR_USERNAME',
+      'password': 'YOUR_PASSWORD',
+  }
+
+Then run: python install_service.py restart
+The system will fetch live data from SQL Server automatically.
+
+
+LOGS
+────
+  logs/access.log  — all API requests
+  logs/error.log   — errors and warnings
+
+
+================================================================
+  For support: Nakul Agarwal | Roll 23EC102 | GSV
+  CRIS Internship 2026 | CEP1 Section | Rail Bhoomi
+================================================================

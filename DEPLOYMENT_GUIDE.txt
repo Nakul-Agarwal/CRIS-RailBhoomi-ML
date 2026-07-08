@@ -1,0 +1,133 @@
+================================================================
+  RAIL BHOOMI ML — COMPLETE PACKAGE
+  AI-Based Project Milestone Prediction System
+  Author    : Nakul Agarwal | Roll 23EC102
+  Mentor    : Mr. Pankaj Motwani (AGM, Civil Engineering)
+  Organisation : CRIS, CEP1 Section, New Delhi
+  Internship   : 18 May – 31 July 2026
+================================================================
+
+WHAT IS THIS?
+─────────────
+This is the complete deployable package for the Rail Bhoomi
+AI Prediction System. It predicts:
+  1. Expected dates for all future notification stages
+     (37A → 7A → 20A → 20E → 20F → 20H → Mutation)
+  2. How many active projects will complete each stage
+     by any given target date (Pipeline Snapshot)
+
+
+PACKAGE CONTENTS
+────────────────
+  app.py                  Flask REST API
+  train_model.py          ML model training (auto SQL + fallback)
+  index.html              Web frontend UI
+  Master_Dataset_5000.xlsx  Training dataset
+  MasterDataset_v1.sql    SQL query for live data extraction
+  requirements.txt        Python dependencies
+  gunicorn_config.py      Production server settings
+  install_service.py      Windows Service installer (one time)
+  retrain.bat             Retrain model on Windows (one click)
+  start.sh                Start on Mac/Linux
+  stop.sh                 Stop on Mac/Linux
+  retrain.sh              Retrain on Mac/Linux
+  Dockerfile              Docker deployment option
+  NET_Integration_Guide   Guide for CRIS .NET developer
+  models/                 Trained ML model files (ready to use)
+  logs/                   Created automatically on first run
+
+
+════════════════════════════════════════════════════════════
+  OPTION A — CRIS WINDOWS SERVER (Recommended for production)
+════════════════════════════════════════════════════════════
+
+This installs the ML API as a Windows Service alongside IIS.
+Done ONCE. After that everything is automatic — no commands
+needed ever again.
+
+REQUIREMENTS:
+  - Python 3.8+ installed on server
+  - Run Command Prompt as Administrator
+
+STEP 1 — Open Command Prompt as Administrator
+STEP 2 — Navigate to this folder:
+          cd C:\path\to\RailBhoomi_Production
+STEP 3 — Run ONE command:
+          python install_service.py install
+
+That is all. The system will:
+  ✅ Install all Python packages
+  ✅ Connect to SQL Server and fetch live data
+  ✅ Train the ML model
+  ✅ Register as a Windows Service
+  ✅ Start automatically now and on every reboot
+  ✅ Restart automatically if it ever crashes
+
+STEP 4 — Give NET_Integration_Guide.txt to CRIS .NET developer
+          They add one page + one menu item to Rail Bhoomi
+          (30 minutes of work, done once)
+
+AFTER THAT — NOTHING EVER NEEDS DOING AGAIN
+  - Server reboots → service starts automatically
+  - Users use it → works automatically
+  - Want to retrain → double-click retrain.bat
+
+
+════════════════════════════════════════════════════════════
+  OPTION B — MAC OR LINUX (Development / Demo)
+════════════════════════════════════════════════════════════
+
+STEP 1 — Open Terminal
+STEP 2 — Navigate to this folder
+STEP 3 — Run:   ./start.sh
+
+Opens at: http://localhost:5000
+Stop with: ./stop.sh
+Retrain:   ./retrain.sh
+
+
+════════════════════════════════════════════════════════════
+  OPTION C — DOCKER (Any machine, zero configuration)
+════════════════════════════════════════════════════════════
+
+REQUIREMENTS: Docker installed
+
+STEP 1 — Build:  docker build -t railbhoomi-ml .
+STEP 2 — Run:    docker run -d -p 5000:5000 --name railbhoomi railbhoomi-ml
+
+Opens at: http://localhost:5000
+Stop:     docker stop railbhoomi
+Retrain:  docker exec railbhoomi python3 train_model.py
+          docker restart railbhoomi
+
+
+════════════════════════════════════════════════════════════
+  UPDATE DB CONNECTION (for production SQL Server)
+════════════════════════════════════════════════════════════
+
+Open train_model.py and update these 4 lines at the top:
+
+  DB_CONFIG = {
+      'server':   'YOUR_SQL_SERVER_NAME',
+      'database': 'YOUR_DATABASE_NAME',
+      'username': 'YOUR_USERNAME',
+      'password': 'YOUR_PASSWORD',
+  }
+
+Done once. After that every retrain fetches live data.
+
+
+════════════════════════════════════════════════════════════
+  API ENDPOINTS
+════════════════════════════════════════════════════════════
+
+Health:    GET  http://localhost:5000/api/health
+Task 1:    POST http://localhost:5000/api/predict_stages
+Task 2:    POST http://localhost:5000/api/pipeline_snapshot
+
+Full details in NET_Integration_Guide.txt
+
+
+================================================================
+  Support: Nakul Agarwal | 23EC102 | Gati Shakti Vishwavidyalaya
+================================================================
