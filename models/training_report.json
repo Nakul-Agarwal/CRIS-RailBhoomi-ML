@@ -1,0 +1,145 @@
+{
+  "trained_on": "20-07-2026 12:43:01",
+  "dataset_rows": 5200,
+  "features": [
+    "railway_enc",
+    "division_enc",
+    "primary_state",
+    "primary_district",
+    "num_states",
+    "num_districts",
+    "government_land",
+    "private_land",
+    "forest_area",
+    "court_case_count",
+    "active_court_cases",
+    "has_court_cases",
+    "start_year",
+    "start_month",
+    "land_difficulty_score",
+    "forest_proportion",
+    "private_proportion",
+    "govt_proportion",
+    "digitalization_score",
+    "digitalization_delay"
+  ],
+  "objections_included": false,
+  "gap_models": {
+    "gap_37A_7A": {
+      "model": "GradientBoosting",
+      "cv_r2": 0.2473,
+      "train_mae": 4.28,
+      "train_r2": 0.5695,
+      "n": 4888
+    },
+    "gap_7A_20A": {
+      "model": "GradientBoosting",
+      "cv_r2": 0.3983,
+      "train_mae": 7.09,
+      "train_r2": 0.5749,
+      "n": 4357
+    },
+    "gap_20A_20E": {
+      "model": "GradientBoosting",
+      "cv_r2": 0.5126,
+      "train_mae": 23.1,
+      "train_r2": 0.6832,
+      "n": 3616
+    },
+    "gap_20E_20F": {
+      "model": "GradientBoosting",
+      "cv_r2": 0.3576,
+      "train_mae": 13.4,
+      "train_r2": 0.6379,
+      "n": 2663
+    },
+    "gap_20F_20H": {
+      "model": "RandomForest",
+      "cv_r2": 0.4088,
+      "train_mae": 6.92,
+      "train_r2": 0.5212,
+      "n": 1669
+    },
+    "gap_20H_mut": {
+      "model": "Ridge",
+      "cv_r2": 0.5004,
+      "train_mae": 21.17,
+      "train_r2": 0.5258,
+      "n": 782
+    }
+  },
+  "stage_durations": {
+    "7A": {
+      "lognorm_mu": 3.4656,
+      "lognorm_sigma": 0.2209,
+      "min": 1.0,
+      "max": 446.0,
+      "p25": 27.0,
+      "p50": 31.0,
+      "p75": 36.0,
+      "mean": 31.822,
+      "std": 9.4017,
+      "n": 4888
+    },
+    "20A": {
+      "lognorm_mu": 4.5933,
+      "lognorm_sigma": 0.18,
+      "min": 63.0,
+      "max": 326.0,
+      "p25": 86.0,
+      "p50": 98.0,
+      "p75": 111.0,
+      "mean": 99.4524,
+      "std": 18.724,
+      "n": 4357
+    },
+    "20E": {
+      "lognorm_mu": 5.9174,
+      "lognorm_sigma": 0.1714,
+      "min": 218.0,
+      "max": 616.0,
+      "p25": 327.0,
+      "p50": 371.0,
+      "p75": 423.0,
+      "mean": 375.8877,
+      "std": 63.8024,
+      "n": 3616
+    },
+    "20F": {
+      "lognorm_mu": 6.1855,
+      "lognorm_sigma": 0.1667,
+      "min": 290.0,
+      "max": 742.0,
+      "p25": 430.0,
+      "p50": 486.0,
+      "p75": 550.0,
+      "mean": 491.3804,
+      "std": 81.5576,
+      "n": 2663
+    },
+    "20H": {
+      "lognorm_mu": 6.2853,
+      "lognorm_sigma": 0.1659,
+      "min": 324.0,
+      "max": 820.0,
+      "p25": 475.0,
+      "p50": 537.0,
+      "p75": 606.0,
+      "mean": 543.0018,
+      "std": 90.0361,
+      "n": 1669
+    },
+    "Mutation": {
+      "lognorm_mu": 6.6323,
+      "lognorm_sigma": 0.1526,
+      "min": 473.0,
+      "max": 1077.0,
+      "p25": 679.25,
+      "p50": 757.0,
+      "p75": 851.0,
+      "mean": 767.0882,
+      "std": 117.0801,
+      "n": 782
+    }
+  }
+}
