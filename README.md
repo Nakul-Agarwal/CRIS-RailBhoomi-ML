@@ -99,7 +99,11 @@ CRIS-RailBhoomi-ML/
  
 ### Option 1 — Docker (Recommended — works anywhere)
  
-Install Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop) then run:
+Install Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop) 
+
+Then change the directory to the Project Folder based on Windows/Mac/Linux
+
+then run:
  
 ```bash
 docker-compose up -d
@@ -108,20 +112,56 @@ docker-compose up -d
 Open browser: `http://localhost:5000`
  
 That is it. No Python installation needed. Auto-restarts on server reboot.
+
+For details check DOCKER_GUIDE.txt in code files.
  
 ### Option 2 — Run Locally (Mac / Linux)
- 
+
+Run each command one by one: 
 ```bash
 git clone https://github.com/Nakul-Agarwal/CRIS-RailBhoomi-ML.git
-cd CRIS-RailBhoomi-ML
+```
+```bash
+cd CRIS-RailBhoomi-ML-main
+```
+```bash
 pip install -r requirements.txt
+```
+```bash
 python3 train_model.py
+```
+```bash
 python3 app.py
 ```
  
 Open browser: `http://localhost:5000`
- 
-### Option 3 — Render.com (Live Demo)
+
+ ### Option 3 — Run Locally on Windows
+
+**Requirement:** Python 3.8+ must be installed — download from [python.org](https://www.python.org/downloads) and tick **"Add Python to PATH"** during installation.
+
+Download and extract the ZIP to Desktop.
+
+Then open Command Promptand Run each command one by one: 
+
+```cmd
+cd %USERPROFILE%\Desktop\CRIS-RailBhoomi-ML-main
+```
+```cmd
+pip install -r requirements.txt
+```
+```cmd
+python train_model.py
+```
+```cmd
+python app.py
+```
+
+Open browser: `http://localhost:5000`
+
+> Keep Command Prompt open while using the tool. Press `Ctrl+C` to stop.
+> 
+### Option 4 — Render.com (Live Demo)
  
 Already deployed at: **https://cris-railbhoomi-ml-1.onrender.com**
  
