@@ -9,8 +9,6 @@
  
 **[Click here to open the live prediction tool](https://cris-railbhoomi-ml-1.onrender.com)**
  
-> Note: Free server — may take 30–50 seconds to wake up on first visit. Works instantly after that.
- 
 ---
  
 ## What is this?
