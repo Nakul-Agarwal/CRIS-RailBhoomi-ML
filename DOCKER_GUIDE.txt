@@ -1,154 +1,206 @@
 ================================================================
-  RAIL BHOOMI ML — DOCKER DEPLOYMENT GUIDE
+  RAIL BHOOMI ML — HOW TO RUN ON YOUR COMPUTER
   AI-Based Project Milestone Prediction System
   Author    : Nakul Agarwal | Roll 23EC102
   Mentor    : Mr. Pankaj Motwani (AGM, Civil Engineering)
   Organisation : CRIS, CEP1 Section, New Delhi
-  Internship   : 18 May – 31 July 2026
 ================================================================
 
-WHAT IS DOCKER?
-───────────────
-Docker packages the entire application — Python, all libraries,
-models, and code — into one portable container. It runs
-identically on any machine: Windows, Linux, or Mac.
-This is the Python equivalent of a Java WAR file.
+LIVE DEMO (No installation needed)
+────────────────────────────────────
+Just open this link in any browser:
+https://cris-railbhoomi-ml-1.onrender.com
 
-
-REQUIREMENT (one time only)
-────────────────────────────
-Install Docker Desktop from: https://www.docker.com/products/docker-desktop
-Takes 5 minutes. Free. Works on Windows, Mac, Linux.
+If you want to run it on your own computer, follow the
+steps below for your operating system.
 
 
 ════════════════════════════════════════════════════════════
-  OPTION A — DOCKER HUB (Simplest — no files needed)
+  STEP 1 — DOWNLOAD THE PROJECT (Same for Mac and Windows)
 ════════════════════════════════════════════════════════════
 
-If the image is published on Docker Hub, run ONE command:
+1. Go to:
+   https://github.com/Nakul-Agarwal/CRIS-RailBhoomi-ML
 
-  docker run -d -p 5000:5000 --name railbhoomi --restart always nakulgit/railbhoomi-ml
+2. Click the green "Code" button
 
-Open browser: http://localhost:5000
+3. Click "Download ZIP"
 
-That is it. No files. No Python. No setup. Just Docker.
+4. Once downloaded, Extract / Unzip the file
 
+5. IMPORTANT — We recommend moving the extracted folder to
+   your Desktop for simplicity.
+   The folder will be named: CRIS-RailBhoomi-ML-main
 
-════════════════════════════════════════════════════════════
-  OPTION B — BUILD FROM THIS FOLDER
-════════════════════════════════════════════════════════════
+   If you extracted to Desktop, your folder is at:
+   Mac     → /Users/YourName/Desktop/CRIS-RailBhoomi-ML-main
+   Windows → C:\Users\YourName\Desktop\CRIS-RailBhoomi-ML-main
 
-STEP 1 — Open Terminal / Command Prompt
-STEP 2 — Navigate to this folder:
-          cd /path/to/RailBhoomi_Docker
-STEP 3 — Build the image (one time, takes 5-8 minutes):
-          docker build -t railbhoomi-ml .
-STEP 4 — Run the container:
-          docker run -d -p 5000:5000 --name railbhoomi --restart always railbhoomi-ml
-STEP 5 — Open browser:
-          http://localhost:5000
-
-DONE. The system is running.
+   If you extracted somewhere else (Downloads, Documents etc.),
+   note the exact location — you will need it in Step 4.
 
 
 ════════════════════════════════════════════════════════════
-  OPTION C — DOCKER COMPOSE (Even simpler)
+  STEP 2 — INSTALL DOCKER DESKTOP (Same for Mac and Windows)
 ════════════════════════════════════════════════════════════
 
-STEP 1 — Navigate to this folder
-STEP 2 — Run:
-          docker-compose up -d
+1. Go to: https://www.docker.com/products/docker-desktop
 
-That is it. Docker Compose builds and starts everything.
-Open: http://localhost:5000
+2. Download for your operating system:
+   - Mac users   → Click "Download for Mac"
+   - Windows users → Click "Download for Windows"
 
+3. Install Docker Desktop:
+   - Mac     → Open the .dmg file → Drag Docker to Applications
+               → Open Docker from Applications
+   - Windows → Run the .exe installer
+               → If asked to enable WSL 2 → click Yes
+               → Restart computer if asked
 
-════════════════════════════════════════════════════════════
-  MANAGEMENT COMMANDS
-════════════════════════════════════════════════════════════
+4. Open Docker Desktop
 
-Check if running:
-  docker ps
+5. Click "Use recommended settings" → Click "Finish"
 
-View logs:
-  docker logs railbhoomi
+6. Wait until you see "Engine running" at the bottom
+   of the Docker Desktop window
 
-Stop the container:
-  docker stop railbhoomi
-
-Start again:
-  docker start railbhoomi
-
-Restart:
-  docker restart railbhoomi
-
-Remove container:
-  docker rm -f railbhoomi
+Docker is now ready.
 
 
 ════════════════════════════════════════════════════════════
-  RETRAIN MODEL (when new SQL Server data is available)
+  STEP 3 — OPEN TERMINAL / COMMAND PROMPT
 ════════════════════════════════════════════════════════════
 
-STEP 1 — Update DB credentials inside container:
-  docker exec -it railbhoomi bash
-  nano train_model.py
-  (update DB_CONFIG with real server details)
-  exit
+On Mac:
+  1. Press Command + Space
+  2. Type Terminal
+  3. Press Enter
 
-STEP 2 — Retrain:
-  docker exec railbhoomi python3 train_model.py
-
-STEP 3 — Restart to load new models:
-  docker restart railbhoomi
+On Windows:
+  1. Press Windows key + R
+  2. Type cmd
+  3. Press Enter
 
 
 ════════════════════════════════════════════════════════════
-  AUTO-START ON SERVER REBOOT
+  STEP 4 — GO TO THE PROJECT FOLDER
 ════════════════════════════════════════════════════════════
 
-The --restart always flag ensures the container starts
-automatically whenever the server reboots. No manual
-intervention ever needed after initial setup.
+IF YOU EXTRACTED TO DESKTOP (recommended):
+
+  On Mac:
+    cd ~/Desktop/CRIS-RailBhoomi-ML-main
+
+  On Windows:
+    cd %USERPROFILE%\Desktop\CRIS-RailBhoomi-ML-main
+
+─────────────────────────────────────────────────────────
+IF YOU EXTRACTED SOMEWHERE ELSE:
+
+You need to type cd followed by the full path of your folder.
+
+  On Mac — Examples:
+    Downloads folder:
+      cd ~/Downloads/CRIS-RailBhoomi-ML-main
+    Documents folder:
+      cd ~/Documents/CRIS-RailBhoomi-ML-main
+    Any other location:
+      cd ~/path/to/CRIS-RailBhoomi-ML-main
+
+  On Windows — Examples:
+    Downloads folder:
+      cd %USERPROFILE%\Downloads\CRIS-RailBhoomi-ML-main
+    Documents folder:
+      cd %USERPROFILE%\Documents\CRIS-RailBhoomi-ML-main
+    Any other location:
+      cd C:\your\path\to\CRIS-RailBhoomi-ML-main
+
+  TIP (Mac): Open the folder in Finder → right click on it
+  → "Get Info" → copy the path shown next to "Where"
+  Then type: cd and paste the path
+
+  TIP (Windows): Open the folder in File Explorer → click
+  on the address bar at the top → copy the full path shown
+  Then type: cd and paste the path
+
+Press Enter after typing the command.
 
 
 ════════════════════════════════════════════════════════════
-  DEPLOY ON DIFFERENT PORT (if 5000 is already in use)
+  STEP 5 — START THE SYSTEM
 ════════════════════════════════════════════════════════════
 
-  docker run -d -p 8080:5000 --name railbhoomi --restart always railbhoomi-ml
+Type this command and press Enter:
 
-Access at: http://localhost:8080
+  docker-compose up -d
 
+Wait for 5 to 8 minutes on first run.
+You will see many lines of text — this is completely normal.
 
-════════════════════════════════════════════════════════════
-  INTEGRATION WITH RAIL BHOOMI .NET PORTAL
-════════════════════════════════════════════════════════════
-
-Once Docker container is running on the CRIS server,
-the .NET developer adds one page to Rail Bhoomi:
-
-  <iframe
-      src="http://localhost:5000"
-      style="width:100%; height:85vh; border:none;"
-      title="Rail Bhoomi Prediction Analysis">
-  </iframe>
-
-Full integration details in: NET_Integration_Guide.txt
+When you see this — it is ready:
+  ✅ Container railbhoomi-ml   Started
 
 
 ════════════════════════════════════════════════════════════
-  API ENDPOINTS
+  STEP 6 — OPEN THE PREDICTION TOOL
 ════════════════════════════════════════════════════════════
 
-Health:  GET  http://localhost:5000/api/health
-Task 1:  POST http://localhost:5000/api/predict_stages
-Task 2:  POST http://localhost:5000/api/pipeline_snapshot
+Open any browser (Chrome, Safari, Edge, Firefox) and go to:
 
-Live demo: https://cris-railbhoomi-ml-1.onrender.com
+  http://localhost:5000
 
+The Rail Bhoomi ML Prediction System will open. ✅
+
+
+════════════════════════════════════════════════════════════
+  NEXT TIME YOU WANT TO USE IT
+════════════════════════════════════════════════════════════
+
+Just open Terminal / Command Prompt and run:
+
+On Mac:
+  cd ~/Desktop/CRIS-RailBhoomi-ML-main
+  docker-compose up -d
+
+On Windows:
+  cd %USERPROFILE%\Desktop\CRIS-RailBhoomi-ML-main
+  docker-compose up -d
+
+Then open: http://localhost:5000
+Starts in seconds — no rebuilding needed.
+
+
+════════════════════════════════════════════════════════════
+  TO STOP THE SYSTEM
+════════════════════════════════════════════════════════════
+
+Type this command and press Enter:
+
+  docker-compose down
+
+
+════════════════════════════════════════════════════════════
+  COMMON ISSUES
+════════════════════════════════════════════════════════════
+
+Page not loading at http://localhost:5000?
+→ Wait 2 more minutes. Model is still loading.
+
+"docker-compose: command not found"?
+→ Docker Desktop is not open. Open it first and wait
+  for "Engine running" then try again.
+
+Port 5000 already in use on Mac?
+→ Go to System Settings → AirPlay Receiver → Turn OFF
+→ Then run docker-compose up -d again
+
+
+════════════════════════════════════════════════════════════
+  GITHUB REPOSITORY
+════════════════════════════════════════════════════════════
+
+https://github.com/Nakul-Agarwal/CRIS-RailBhoomi-ML
 
 ================================================================
-  Support: Nakul Agarwal | 23EC102 | Gati Shakti Vishwavidyalaya
-  GitHub: github.com/Nakul-Agarwal/CRIS-RailBhoomi-ML
+  Nakul Agarwal | 23EC102 | CRIS Internship 2026
 ================================================================
