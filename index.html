@@ -363,7 +363,7 @@ body { font-family: Arial, sans-serif; font-size: 13px; background: #eef1f4; col
 </div>
 
 <script>
-const API = 'http://localhost:5000';
+const API = window.location.origin;
 
 // ── LGD Data ──────────────────────────────────────────────────────
 const STATES_DATA = [{"code": 1, "name": "Jammu And Kashmir"}, {"code": 2, "name": "Himachal Pradesh"}, {"code": 3, "name": "Punjab"}, {"code": 4, "name": "Chandigarh"}, {"code": 5, "name": "Uttarakhand"}, {"code": 6, "name": "Haryana"}, {"code": 7, "name": "Delhi"}, {"code": 8, "name": "Rajasthan"}, {"code": 9, "name": "Uttar Pradesh"}, {"code": 10, "name": "Bihar"}, {"code": 11, "name": "Sikkim"}, {"code": 12, "name": "Arunachal Pradesh"}, {"code": 13, "name": "Nagaland"}, {"code": 14, "name": "Manipur"}, {"code": 15, "name": "Mizoram"}, {"code": 16, "name": "Tripura"}, {"code": 17, "name": "Meghalaya"}, {"code": 18, "name": "Assam"}, {"code": 19, "name": "West Bengal"}, {"code": 20, "name": "Jharkhand"}, {"code": 21, "name": "Odisha"}, {"code": 22, "name": "Chhattisgarh"}, {"code": 23, "name": "Madhya Pradesh"}, {"code": 24, "name": "Gujarat"}, {"code": 27, "name": "Maharashtra"}, {"code": 28, "name": "Andhra Pradesh"}, {"code": 29, "name": "Karnataka"}, {"code": 30, "name": "Goa"}, {"code": 31, "name": "Lakshadweep"}, {"code": 32, "name": "Kerala"}, {"code": 33, "name": "Tamil Nadu"}, {"code": 34, "name": "Puducherry"}, {"code": 35, "name": "Andaman And Nicobar Islands"}, {"code": 36, "name": "Telangana"}, {"code": 37, "name": "Ladakh"}, {"code": 38, "name": "The Dadra And Nagar Haveli And Daman And Diu"}];
@@ -570,7 +570,7 @@ async function predictStages() {
     if(!d.success) throw new Error(d.error||'Prediction failed.');
     renderT1(d, stage, disp);
   } catch(e) {
-    showAlert('al1','⚠  '+e.message+'  |  Ensure Flask API is running on localhost:5000');
+    showAlert('al1','⚠  '+e.message+'  |  Server error — please try again');
   } finally { hideSpin('sp1'); }
 }
 
@@ -634,7 +634,7 @@ async function pipelineSnap() {
     if(!d.success) throw new Error(d.error||'Forecast failed.');
     renderT2(d);
   } catch(e) {
-    showAlert('al2','⚠  '+e.message+'  |  Ensure Flask API is running on localhost:5000');
+    showAlert('al2','⚠  '+e.message+'  |  Server error — please try again');
   } finally { hideSpin('sp2'); }
 }
 
